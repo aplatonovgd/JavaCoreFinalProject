@@ -3,6 +3,7 @@ package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors;
 
 import com.google.gson.Gson;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.BaseRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,12 +16,14 @@ public abstract  class RequestProcessor implements BaseRequestProcessor {
     private HttpServletResponse response;
     protected Gson gson = new Gson();
     protected String JsonResponseBody;
+    protected DBProcessor dbProcessor;
 
 
-    RequestProcessor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    RequestProcessor(HttpServletRequest request, HttpServletResponse response, DBProcessor dbProcessor) throws IOException {
         this.request = request;
         this.response = response;
         this.JsonResponseBody = getBody(request);
+        this.dbProcessor = dbProcessor;
     }
 
 
@@ -37,12 +40,7 @@ public abstract  class RequestProcessor implements BaseRequestProcessor {
         return buf;
     }
 
-  /*  @Override
-    public RegisterRequest ParseJson(String json){
-        gson = new Gson();
-        RegisterRequest newUserJSON = gson.fromJson(json,RegisterRequest.class);
-        return newUserJSON;
-    }*/
+
 
 
 }

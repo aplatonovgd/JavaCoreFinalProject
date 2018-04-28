@@ -5,7 +5,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserProcessor {
+public class UserInfo {
 
     private List<User> userList = new ArrayList<>();
 

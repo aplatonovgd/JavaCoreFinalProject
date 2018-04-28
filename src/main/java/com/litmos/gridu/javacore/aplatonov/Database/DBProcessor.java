@@ -1,5 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.Database;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.User;
 import com.sun.javafx.binding.StringFormatter;
 
 import javax.swing.plaf.nimbus.State;
@@ -40,6 +41,33 @@ public class DBProcessor extends AbstractDBConnector {
              }
              else throw new SQLException(e);
         }
+    }
+
+
+    public List<User> getUsers() throws SQLException {
+
+        List<User> userList= new ArrayList<>();
+
+        try (Connection connection = getDataBaseConnection(false)){
+
+            Statement usersStatement = connection.createStatement();
+            String sqlSelectQuery = "select * from Users";
+
+           ResultSet resultSet =  usersStatement.executeQuery(sqlSelectQuery);
+
+            String userId;
+            String userPasswordHash;
+            String userEmail;
+            int isBlocked;
+            while (resultSet.next()){
+               userId = resultSet.getString("userId");
+               userEmail = resultSet.getString("userLogin");
+               userPasswordHash = resultSet.getString("userPassword");
+               isBlocked = resultSet.getInt("isBlocked");
+               userList.add(new User(userId,userEmail,userPasswordHash,isBlocked));
+           }
+        }
+        return userList;
     }
 
     /*public List<Products> getProducts (){

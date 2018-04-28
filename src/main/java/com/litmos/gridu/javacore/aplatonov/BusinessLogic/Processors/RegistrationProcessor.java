@@ -1,6 +1,7 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.InvalidJsonException;
+import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.models.RegisterRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +11,8 @@ import java.io.IOException;
 public class RegistrationProcessor extends RequestProcessor {
 
 
-    RegistrationProcessor(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        super(request,response);
+    RegistrationProcessor(HttpServletRequest request, HttpServletResponse response, DBProcessor dbProcessor, UserInfo userInfo) throws IOException {
+        super(request,response, dbProcessor);
     }
 
    @Override
@@ -26,6 +27,11 @@ public class RegistrationProcessor extends RequestProcessor {
       return registerRequest;
     }
 
+    public void ProcessUser(RegisterRequest registerRequest){
+
+       // db.getUsers
+
+    }
 
 
 }
