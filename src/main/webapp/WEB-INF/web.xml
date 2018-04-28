@@ -1,0 +1,53 @@
+<web-app version="3.0">
+
+<!-- DataBase params -->
+<!-- Server check connection params. If there is a problem server will throw a Runtime Exception -->
+    <context-param>
+        <param-name>databaseUrl</param-name>
+        <param-value>jdbc:mysql://localhost:3306/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>databaseName</param-name>
+        <param-value>test1</param-value>
+    </context-param>
+    <context-param>
+        <param-name>databaseLogin</param-name>
+        <param-value>root</param-value>
+    </context-param>
+    <context-param>
+        <param-name>databasePassword</param-name>
+        <param-value></param-value>
+    </context-param>
+
+
+
+    <listener>
+     	<listener-class>
+           com.litmos.gridu.javacore.aplatonov.Servlets.ServerInit
+        </listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>HomePageServlet</servlet-name>
+        <servlet-class>com.litmos.gridu.javacore.aplatonov.Servlets.HomePageServlet</servlet-class>
+        <display-name>HelloWorldServlet</display-name>
+        <init-param>
+            <param-name>Greetings</param-name>
+            <param-value>Hello</param-value>
+        </init-param>
+        <context-param>
+            <param-name>myParam</param-name>
+            <param-value>the value</param-value>
+        </context-param>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ServerInit</servlet-name>
+        <servlet-class>com.litmos.gridu.javacore.aplatonov.Servlets.ServerInit</servlet-class>
+        <init-param>
+            <param-name>Greetings</param-name>
+            <param-value>Hello</param-value>
+        </init-param>
+    </servlet>
+
+
+</web-app>
