@@ -1,52 +1,111 @@
 package com.litmos.gridu.javacore.aplatonov.Database;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.User;
-import com.sun.javafx.binding.StringFormatter;
+import com.litmos.gridu.javacore.aplatonov.models.LoginRequestModel;
+import com.litmos.gridu.javacore.aplatonov.models.RegisterRequestModel;
 
-import javax.swing.plaf.nimbus.State;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
-public class DBProcessor extends AbstractDBConnector {
+public class DBProcessor extends DBConnector {
 
     boolean isDbExist= false;
 
 
-    public List<String> parseSQLScript(String filepath) throws IOException {
-        List<String> dbScript  = Files.readAllLines(Paths.get(filepath), Charset.defaultCharset());
-        dbScript = dbScript.stream().map(r -> r.replaceAll("dbname",dbName)).collect(Collectors.toList());//.forEach(arg -> arg.replaceAll("dbname",dbName));
-        return dbScript;
-    }
-
-
     public DBProcessor(String dbUrl, String dbName, String username, String dbPassword, String dbCreateScript, String addTableDataScript) throws IOException, SQLException {
         initDBConnector(dbUrl, dbName, username, dbPassword);
-        try (Connection connection = getDataBaseConnection(false)) {}
+        try (Connection connection = getDataBaseConnection()) {}
         catch (SQLException e) {
             //MySQL only
             if (e.getSQLState().equalsIgnoreCase("42000")) {
-                executeBatchStatement(dbCreateScript);
-                executeBatchStatement(addTableDataScript);
+                executeBatchStatementOnServer(dbCreateScript);
+                executeBatchStatementOnServer(addTableDataScript);
              }
              else throw new SQLException(e);
         }
     }
 
 
-    public List<User> getUsers() throws SQLException {
+    public void addUserToDB(RegisterRequestModel registerRequestModel) throws SQLException {
 
-        List<User> userList= new ArrayList<>();
+        insertStatementHandler("INSERT INTO `users` (`userLogin`, `userPassword`, `isBlocked`) VALUES (?,?,?)",
+                registerRequestModel.getEmail(), registerRequestModel.getPassword(),0);
+    }
+
+
+    public List<LoginRequestModel> getLoginRequestModleListByLogin(String email) throws SQLException, IllegalArgumentException {
+        List<LoginRequestModel> userList;
+        userList = selectStatementHandler(getLoginUserModel,"select * from users where userLogin = ?", email);
+        return userList;
+    }
+
+    public List<RegisterRequestModel> getRegisterRequestModelListByLogin(String email) throws SQLException, IllegalArgumentException {
+        List<RegisterRequestModel> userList;
+        userList = selectStatementHandler(getRegisteredUsersModel,"select * from users where userLogin = ?", email);
+        return userList;
+    }
+
+
+
+    static CheckedFunction<ResultSet,List<LoginRequestModel>> getLoginUserModel= resultSet -> {
+        List<LoginRequestModel> registeredUsers = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                String email = resultSet.getString("userLogin");
+                String password = resultSet.getString("userPassword");
+                int userId = resultSet.getInt("userId");
+                LoginRequestModel registerRequestModel = new LoginRequestModel(email, password, userId);
+                registeredUsers.add(registerRequestModel);
+            }
+        }
+        catch (SQLException e){
+            throw e;
+        }
+        return registeredUsers;
+    };
+
+
+
+    static CheckedFunction<ResultSet,List<RegisterRequestModel>> getRegisteredUsersModel= resultSet -> {
+        List<RegisterRequestModel> registeredUsers = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                String email = resultSet.getString("userLogin");
+                String password = resultSet.getString("userPassword");
+                RegisterRequestModel registerRequestModel = new RegisterRequestModel(email, password);
+                registeredUsers.add(registerRequestModel);
+            }
+        }
+        catch (SQLException e){
+            throw e;
+        }
+        return registeredUsers;
+    };
+
+
+
+    //TODO DELETE AFTER CREATION. It's just an example
+    static Function<ResultSet,List<String>> ProcessUsers  = arg -> {
+        List<String> usersLogins = new ArrayList<>();
+        try {
+            while (arg.next()) {
+                usersLogins.add(arg.getString("userLogin"));
+            }
+        }
+        catch (Exception e){
+            usersLogins =null;
+        }
+        return usersLogins;
+    };
+
+}
+
+
+  /*  public List<LoggedinUser> getUsers() throws SQLException {
+
+        List<LoggedinUser> userList= new ArrayList<>();
 
         try (Connection connection = getDataBaseConnection(false)){
 
@@ -64,11 +123,11 @@ public class DBProcessor extends AbstractDBConnector {
                userEmail = resultSet.getString("userLogin");
                userPasswordHash = resultSet.getString("userPassword");
                isBlocked = resultSet.getInt("isBlocked");
-               userList.add(new User(userId,userEmail,userPasswordHash,isBlocked));
+               userList.add(new LoggedinUser(userId,userEmail,userPasswordHash,isBlocked));
            }
         }
         return userList;
-    }
+    }*/
 
     /*public List<Products> getProducts (){
 
@@ -82,26 +141,3 @@ public class DBProcessor extends AbstractDBConnector {
         }
 
     }*/
-
-    public Statement generateBatch(List<String> sqlScript, Connection connection, Statement statement) throws SQLException {
-        for(String line : sqlScript){
-            statement.addBatch(line);
-        }
-        return statement;
-    }
-
-    public void executeBatchStatement(String sqlCreateScript) throws IOException, SQLException {
-        List<String> dbScript = parseSQLScript(sqlCreateScript);
-
-        try(Connection sqlConnection = getDataBaseConnection(true)) {
-
-            Statement statement = sqlConnection.createStatement();
-            Statement dataBaseCreationStatement = generateBatch(dbScript, sqlConnection, statement);
-            dataBaseCreationStatement.executeBatch();
-            dataBaseCreationStatement.close();
-
-        }
-
-    }
-
-}

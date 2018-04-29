@@ -1,8 +1,8 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
 
 
 import com.google.gson.Gson;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.BaseRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.InvalidJsonException;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,24 +10,25 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public abstract  class RequestProcessor implements BaseRequestProcessor {
+public abstract class AbstractRequestProcessor {
 
     private HttpServletRequest request;
-    private HttpServletResponse response;
     protected Gson gson = new Gson();
-    protected String JsonResponseBody;
+    protected String jsonResponseBody;
     protected DBProcessor dbProcessor;
 
 
-    RequestProcessor(HttpServletRequest request, HttpServletResponse response, DBProcessor dbProcessor) throws IOException {
+    protected AbstractRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor) throws IOException {
         this.request = request;
-        this.response = response;
-        this.JsonResponseBody = getBody(request);
+        this.jsonResponseBody = getBody(request);
         this.dbProcessor = dbProcessor;
+
+        getBody(request);
     }
 
+    protected abstract Object parseJson(String jsonResponseBody) throws InvalidJsonException;
 
-    public final String getBody(HttpServletRequest request) throws IOException {
+    protected final String getBody(HttpServletRequest request) throws IOException {
 
         StringBuilder buffer = new StringBuilder();
         BufferedReader reader = request.getReader();
@@ -39,8 +40,6 @@ public abstract  class RequestProcessor implements BaseRequestProcessor {
         String buf = buffer.toString();
         return buf;
     }
-
-
 
 
 }

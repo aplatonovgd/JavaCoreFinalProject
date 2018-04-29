@@ -1,14 +1,11 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.sun.javafx.binding.StringFormatter;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 
 public class ServerInit implements ServletContextListener{
@@ -31,8 +28,7 @@ public class ServerInit implements ServletContextListener{
        // servletContext.setAttribute("dbConnection","dbconninfo"); // use for test
         //throw new RuntimeException("test");
         //getting Server properties
-
-        servletContext.log("Getting DB params");
+        servletContext.log("Getting DB params from web.xml");
 
         String dbUrl = servletContext.getInitParameter("databaseUrl");
         String dbName = servletContext.getInitParameter("databaseName");
@@ -40,7 +36,16 @@ public class ServerInit implements ServletContextListener{
         String dbPassword = servletContext.getInitParameter("databasePassword");
         String dbCreateScript = servletContext.getRealPath("/WEB-INF/dbCreateScript.sql");
         String addTableDataScript = servletContext.getRealPath("/WEB-INF/addTableDataScript.sql");
-        servletContext.log("DB PARAMS: " + "dbUrl: " + dbUrl + "dbName: " + dbName+  " dbUsername: " + dbUsername + " dbPassword: " + dbPassword);
+
+        servletContext.log("Database Parameters");
+        servletContext.log ("Database URL: " + dbUrl);
+        servletContext.log ("Database Name: " + dbName);
+        servletContext.log ("Database LOGIN: " + dbUsername);
+        servletContext.log ("Database password: " + dbPassword);
+
+        servletContext.log("Getting settings from web.xml");
+        boolean hashPasswords = Boolean.parseBoolean(servletContext.getInitParameter("hashPasswords"));
+        servletContext.log("Hash password required: " + hashPasswords);
 
 
         servletContext.log("Trying to connect to the database");
@@ -49,7 +54,7 @@ public class ServerInit implements ServletContextListener{
         try
         {
             dbProcessor = new DBProcessor(dbUrl, dbName, dbUsername, dbPassword, dbCreateScript, addTableDataScript);
-            servletContext.log("success");
+            servletContext.log("Connected Successfully");
         } catch (IOException e) {
             servletContext.log("FATAL ERROR" );
             throw new RuntimeException(e);
@@ -58,10 +63,15 @@ public class ServerInit implements ServletContextListener{
             throw new RuntimeException(e);
         }
 
+        LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = new LoginRequestProcessor.LoggedInUserInfo();
+
+
         servletContext.setAttribute("dbConnection",dbProcessor);
+        servletContext.setAttribute("hashPasswords", hashPasswords);
+        servletContext.setAttribute("loggedInUserInfo", loggedInUserInfo);
+        servletContext.log("dbConnection object added to servletContext");
 
-
-
+        servletContext.log("===========INIT SUCCESSFUL===========");
 
     }
 

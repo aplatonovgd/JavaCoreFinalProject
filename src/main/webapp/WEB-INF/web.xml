@@ -16,7 +16,11 @@
     </context-param>
     <context-param>
         <param-name>databasePassword</param-name>
-        <param-value></param-value>
+        <param-value>123456</param-value>
+    </context-param>
+    <context-param>
+        <param-name>hashPasswords</param-name>
+        <param-value>true</param-value>
     </context-param>
 
 
