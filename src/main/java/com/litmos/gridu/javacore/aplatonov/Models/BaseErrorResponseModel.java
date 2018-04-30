@@ -1,8 +1,12 @@
-package com.litmos.gridu.javacore.aplatonov.models;
+package com.litmos.gridu.javacore.aplatonov.Models;
+
+import com.google.gson.annotations.Expose;
 
 public class BaseErrorResponseModel {
 
+    @Expose
     private String message;
+    @Expose
     private String description;
 
     public BaseErrorResponseModel(String message, String description){

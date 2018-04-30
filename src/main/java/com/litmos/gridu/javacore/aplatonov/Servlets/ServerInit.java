@@ -1,5 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 
@@ -20,6 +21,7 @@ public class ServerInit implements ServletContextListener{
 
         ServletContext servletContext = servletContextEvent.getServletContext();
         servletContext.log("===========SERVER INIT===========");
+        //TODO DELETE;
         //String hello = (String) servletContext.getInitParameter("email");
        // servletContext.log(hello);
         //servletContext.setInitParameter("email","john@wick.com");
@@ -65,11 +67,13 @@ public class ServerInit implements ServletContextListener{
 
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = new LoginRequestProcessor.LoggedInUserInfo();
 
+        AbstractCartRequestProcessor.CartInfo cartInfo = new AbstractCartRequestProcessor.CartInfo();
 
         servletContext.setAttribute("dbConnection",dbProcessor);
         servletContext.setAttribute("hashPasswords", hashPasswords);
         servletContext.setAttribute("loggedInUserInfo", loggedInUserInfo);
-        servletContext.log("dbConnection object added to servletContext");
+        servletContext.setAttribute("cartInfo", cartInfo);
+        servletContext.log("Initialized objects added to servletContext");
 
         servletContext.log("===========INIT SUCCESSFUL===========");
 

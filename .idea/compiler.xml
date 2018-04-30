@@ -9,5 +9,8 @@
         <module name="JavaCoreFinalProject" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="JavaCoreFinalProject" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

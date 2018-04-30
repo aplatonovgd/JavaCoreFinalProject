@@ -1,6 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response;
 
-import com.litmos.gridu.javacore.aplatonov.models.BaseErrorResponseModel;
+import com.litmos.gridu.javacore.aplatonov.Models.BaseErrorResponseModel;
 
 public class ErrorResponseProcessor extends AbstractErrorResponseProcessor {
 

@@ -1,12 +1,15 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.*;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.LoginResponseProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.PostRequestValidator;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.LoginRequestValidationResultProcessor;
+import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -34,11 +37,12 @@ public class LoginServlet extends HttpServlet {
 
         try {
             LoginRequestProcessor loginProcessor = new LoginRequestProcessor(req,dbProcessor,hashPasswords,loggedInUserInfo);
-            String sessionId = loginProcessor.processUser();
+            String sessionId = loginProcessor.processRequest();
             addCookiesToResponse(sessionId, loggedInUserInfo, resp);
 
             LoginResponseProcessor loginResponseProcessor = new LoginResponseProcessor(sessionId);
             resp.getWriter().write(loginResponseProcessor.getResponseBody());
+
         }
         catch (IncorrectNameOrPasswordException e){
             getServletContext().log("Incorrect email or password : " + e.getMessage());
@@ -74,23 +78,20 @@ public class LoginServlet extends HttpServlet {
         getServletContext().log("Request Method " + req.getMethod());
         getServletContext().log("Request headers validation started");
 
-        PostRequestValidator postRequestValidator = new PostRequestValidator();
-        ValidationResultModel validationResultModel = postRequestValidator.getRequestValidationResult(req);
+        ServletConfig servletConfig = getServletConfig();
+        LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =
+                (LoginRequestProcessor.LoggedInUserInfo) servletConfig.getServletContext().getAttribute("loggedInUserInfo");
 
-        if(validationResultModel.isSuccess()) {
-            getServletContext().log("Request validation success");
+        SecurePostRequestValidator postRequestValidator = new SecurePostRequestValidator(req, loggedInUserInfo,
+                true, getServletContext());
+        ValidationResultModel validationResultModel = postRequestValidator.getRequestValidationResult();
+
+        boolean isResultSuccess = LoginRequestValidationResultProcessor.isResultSuccess(resp,validationResultModel,getServletContext());
+
+        if (isResultSuccess){
             doPost(req,resp);
         }
-        else {
-            getServletContext().log("Request validation failed - "  + validationResultModel.getMessage());
-            ErrorResponseProcessor errorResponseProcessor =
-                    new ErrorResponseProcessor(validationResultModel.getMessage(), validationResultModel.getDescription());
 
-            resp.addHeader("Allow","POST");
-            resp.setContentType("application/json");
-            resp.setStatus(405);
-            resp.getWriter().write(errorResponseProcessor.getResponseBody());
-        }
     }
 
     public void addCookiesToResponse(String sessionId, LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo, HttpServletResponse resp) throws SessionNotFoundException {

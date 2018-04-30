@@ -1,18 +1,23 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class PostRequestValidator extends AbstractRequestValidator {
+public class SecurePostRequestValidator extends AbstractSecureRequestValidator {
 
-    public PostRequestValidator(HttpServletRequest request){
-        super(request);
+
+    public SecurePostRequestValidator(HttpServletRequest request, LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo,
+                                      boolean isUnauthorizedRequestExpected, ServletContext context) {
+        super(request, loggedInUserInfo, isUnauthorizedRequestExpected, context);
     }
+
 
     @Override
     protected ValidationResultModel getRequestMethodValidationResult(String requestMethodName) {
-       ValidationResultModel validationResultModel;
+        ValidationResultModel validationResultModel;
         boolean isValid = false;
 
         if (requestMethodName.equals("POST") ){

@@ -1,12 +1,12 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.IncorrectNameOrPasswordException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.InvalidJsonException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.SessionNotFoundException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Helpers.RequestProcessorHelper;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.models.LoginRequestModel;
+import com.litmos.gridu.javacore.aplatonov.Models.LoginRequestModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.*;
 
-public class LoginRequestProcessor extends AbstractRequestProcessor {
+public class LoginRequestProcessor extends AbstractPostRequestProcessor {
 
 private boolean hashPassword;
 
@@ -27,16 +27,16 @@ private LoggedInUserInfo loggedInUserInfo;
     }
 
 
-    public String processUser() throws SQLException, InvalidJsonException, IncorrectNameOrPasswordException, NoSuchAlgorithmException {
+    public String processRequest() throws SQLException, InvalidJsonException, IncorrectNameOrPasswordException, NoSuchAlgorithmException {
 
-        LoginRequestModel loginRequest = parseJson(jsonResponseBody);
-        List<LoginRequestModel> registeredUsers = dbProcessor.getLoginRequestModleListByLogin(loginRequest.getEmail());
+        LoginRequestModel loginRequest = parseJson(requestBody);
+        List<LoginRequestModel> registeredUsers = dbProcessor.getLoginRequestModelListByLogin(loginRequest.getEmail());
 
         Optional<LoginRequestModel> databaseUser = checkLoginInDatabase(loginRequest.getEmail(), registeredUsers);
         checkPassword(hashPassword,loginRequest.getPassword(), databaseUser.get().getPassword());
 
-        String sessionId = RequestProcessorHelper.generateSessionId();
-        long sessionCreatedTime = RequestProcessorHelper.getCreationTime();
+        String sessionId = RequestHelper.generateSessionId();
+        long sessionCreatedTime = RequestHelper.getCreationTime();
         LoggedinUser loggedinUser = new LoggedinUser(databaseUser.get().getUserId(),databaseUser.get().getEmail(),databaseUser.get().getPassword(),sessionCreatedTime);
         loggedInUserInfo.addLoginInfo(sessionId, loggedinUser);
 
@@ -48,7 +48,7 @@ private LoggedInUserInfo loggedInUserInfo;
 
         if (hashPassword) {
             String cleanPass = loginRrequestPassword;
-            loginRrequestPassword = RequestProcessorHelper.calculatePasswordHash(cleanPass);
+            loginRrequestPassword = RequestHelper.calculatePasswordHash(cleanPass);
         }
 
         if (!loginRrequestPassword.equals(databasePassword)) {

@@ -1,8 +1,13 @@
-package com.litmos.gridu.javacore.aplatonov.models;
+package com.litmos.gridu.javacore.aplatonov.Models;
+
+import com.google.gson.annotations.Expose;
 
 public class RegisterRequestModel {
 
+    @Expose
     protected String email;
+
+    @Expose
     protected String password;
 
     public RegisterRequestModel(String email, String password){

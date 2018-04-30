@@ -32,7 +32,7 @@
     </listener>
     <servlet>
         <servlet-name>HomePageServlet</servlet-name>
-        <servlet-class>com.litmos.gridu.javacore.aplatonov.Servlets.HomePageServlet</servlet-class>
+        <servlet-class>com.litmos.gridu.javacore.aplatonov.Servlets.RootServlet</servlet-class>
         <display-name>HelloWorldServlet</display-name>
         <init-param>
             <param-name>Greetings</param-name>

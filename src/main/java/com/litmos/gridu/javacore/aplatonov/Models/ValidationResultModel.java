@@ -1,8 +1,14 @@
-package com.litmos.gridu.javacore.aplatonov.models;
+package com.litmos.gridu.javacore.aplatonov.Models;
+
+import com.google.gson.annotations.Expose;
 
 public class ValidationResultModel {
+
+    @Expose
     private boolean success;
+    @Expose
     private String message;
+    @Expose
     private String description;
 
 

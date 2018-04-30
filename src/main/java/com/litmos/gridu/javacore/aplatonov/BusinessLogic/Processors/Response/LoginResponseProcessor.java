@@ -1,7 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response;
 
 import com.google.gson.Gson;
-import com.litmos.gridu.javacore.aplatonov.models.LoginResponseModel;
 
 public class LoginResponseProcessor implements BaseResponseProcessor{
 

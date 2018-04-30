@@ -1,10 +1,10 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.InvalidJsonException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.UserExistException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Helpers.RequestProcessorHelper;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.UserExistException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.models.RegisterRequestModel;
+import com.litmos.gridu.javacore.aplatonov.Models.RegisterRequestModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public class RegistrationRequestProcessor extends AbstractRequestProcessor {
+public class RegistrationRequestProcessor extends AbstractPostRequestProcessor {
 
     protected boolean hashPassword;
 
@@ -23,9 +23,9 @@ public class RegistrationRequestProcessor extends AbstractRequestProcessor {
     }
 
 
-    public void processUser() throws InvalidJsonException, SQLException, UserExistException, NoSuchAlgorithmException {
+    public void processRequest() throws InvalidJsonException, SQLException, UserExistException, NoSuchAlgorithmException {
 
-        RegisterRequestModel registerRequest = parseJson(jsonResponseBody);
+        RegisterRequestModel registerRequest = parseJson(requestBody);
 
         List<RegisterRequestModel> registeredUsers = dbProcessor.getRegisterRequestModelListByLogin(registerRequest.getEmail());
 
@@ -40,7 +40,7 @@ public class RegistrationRequestProcessor extends AbstractRequestProcessor {
         else {
 
             if (hashPassword){
-                String password = RequestProcessorHelper.calculatePasswordHash(registerRequest.getPassword());
+                String password = RequestHelper.calculatePasswordHash(registerRequest.getPassword());
                 registerRequest = new RegisterRequestModel(registerRequest.getEmail(),password);
             }
 

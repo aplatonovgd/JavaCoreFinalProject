@@ -1,13 +1,13 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions;
 
 public class SessionNotFoundException extends Exception{
 
     public SessionNotFoundException(String message) {
-        super("Session not found");
+        super(message);
     }
 
     public SessionNotFoundException(String message, Throwable cause) {
-        super("Session not found", cause);
+        super(message, cause);
     }
 
 

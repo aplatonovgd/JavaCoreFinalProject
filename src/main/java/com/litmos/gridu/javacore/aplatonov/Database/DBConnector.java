@@ -99,7 +99,9 @@ public class DBConnector {
         try(Connection connection = getDataBaseConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
 
-            AddParamsToStatement(preparedStatement, parameters) ;
+            if (parameters.length > 0) {
+                AddParamsToStatement(preparedStatement, parameters);
+            }
             rs =  preparedStatement.executeQuery();
             arrayList = function.apply(rs);
         }
@@ -111,7 +113,9 @@ public class DBConnector {
     protected <T> void insertStatementHandler(String sqlQuery, T... parameters) throws SQLException, IllegalArgumentException {
         try(Connection connection = getDataBaseConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
-            AddParamsToStatement(preparedStatement, parameters) ;
+            if (parameters.length >0) {
+                AddParamsToStatement(preparedStatement, parameters);
+            }
             preparedStatement.execute();
         }
     }

@@ -1,4 +1,4 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions;
 
 public class IncorrectNameOrPasswordException extends Exception{
 

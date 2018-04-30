@@ -1,7 +1,9 @@
 package com.litmos.gridu.javacore.aplatonov.Database;
 
-import com.litmos.gridu.javacore.aplatonov.models.LoginRequestModel;
-import com.litmos.gridu.javacore.aplatonov.models.RegisterRequestModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.Item;
+import com.litmos.gridu.javacore.aplatonov.Models.LoginRequestModel;
+import com.litmos.gridu.javacore.aplatonov.Models.ProductModel;
+import com.litmos.gridu.javacore.aplatonov.Models.RegisterRequestModel;
 
 import java.io.IOException;
 import java.sql.*;
@@ -28,6 +30,12 @@ public class DBProcessor extends DBConnector {
     }
 
 
+    public List<Item> getItemListFromDatabseById(int productId) throws SQLException {
+        List<Item> itemList = selectStatementHandler(getItem, "select * from products where productId = ?", productId);
+        return itemList;
+    }
+
+
     public void addUserToDB(RegisterRequestModel registerRequestModel) throws SQLException {
 
         insertStatementHandler("INSERT INTO `users` (`userLogin`, `userPassword`, `isBlocked`) VALUES (?,?,?)",
@@ -35,7 +43,13 @@ public class DBProcessor extends DBConnector {
     }
 
 
-    public List<LoginRequestModel> getLoginRequestModleListByLogin(String email) throws SQLException, IllegalArgumentException {
+    public List<ProductModel> getProducts() throws SQLException {
+         List<ProductModel> productModels;
+         productModels = selectStatementHandler(getProducts,"select * from products");
+         return productModels;
+    }
+
+    public List<LoginRequestModel> getLoginRequestModelListByLogin(String email) throws SQLException, IllegalArgumentException {
         List<LoginRequestModel> userList;
         userList = selectStatementHandler(getLoginUserModel,"select * from users where userLogin = ?", email);
         return userList;
@@ -47,6 +61,47 @@ public class DBProcessor extends DBConnector {
         return userList;
     }
 
+
+
+
+    static CheckedFunction<ResultSet,List<Item>> getItem = resultSet -> {
+        List<Item> itemList = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+                String productId = String.valueOf(resultSet.getInt("productId"));
+                String title = resultSet.getString("productTitle");
+                String quantity = resultSet.getString("productQuantity");
+                String productPrice = resultSet.getString("productPrice");
+                Item item = new Item(productId,title,quantity,productPrice);
+                itemList.add(item);
+            }
+        }
+        catch (SQLException e){
+            throw  e;
+        }
+        return itemList;
+    };
+
+
+    static CheckedFunction<ResultSet,List<ProductModel>> getProducts = resultSet -> {
+        List<ProductModel> productModels = new ArrayList<>();
+        try {
+            while (resultSet.next()) {
+
+                String productId = String.valueOf(resultSet.getInt("productId"));
+                String productTitle = String.valueOf(resultSet.getString("productTitle"));
+                String productQuantity = String.valueOf(resultSet.getString("productQuantity"));
+                String productPrice = String.valueOf(resultSet.getString("productPrice"));
+
+                ProductModel productModel = new ProductModel(productId,productTitle,productQuantity,productPrice);
+                productModels.add(productModel);
+            }
+        }
+        catch (SQLException e){
+            throw  e;
+        }
+        return  productModels;
+    };
 
 
     static CheckedFunction<ResultSet,List<LoginRequestModel>> getLoginUserModel= resultSet -> {
@@ -101,43 +156,3 @@ public class DBProcessor extends DBConnector {
     };
 
 }
-
-
-  /*  public List<LoggedinUser> getUsers() throws SQLException {
-
-        List<LoggedinUser> userList= new ArrayList<>();
-
-        try (Connection connection = getDataBaseConnection(false)){
-
-            Statement usersStatement = connection.createStatement();
-            String sqlSelectQuery = "select * from Users";
-
-           ResultSet resultSet =  usersStatement.executeQuery(sqlSelectQuery);
-
-            String userId;
-            String userPasswordHash;
-            String userEmail;
-            int isBlocked;
-            while (resultSet.next()){
-               userId = resultSet.getString("userId");
-               userEmail = resultSet.getString("userLogin");
-               userPasswordHash = resultSet.getString("userPassword");
-               isBlocked = resultSet.getInt("isBlocked");
-               userList.add(new LoggedinUser(userId,userEmail,userPasswordHash,isBlocked));
-           }
-        }
-        return userList;
-    }*/
-
-    /*public List<Products> getProducts (){
-
-        try(Connection sqlConnection = getDataBaseConnection(true)) {
-
-           // Statement statement = sqlConnection.createStatement();
-           // Statement dataBaseCreationStatement = generateBatch(dbScript, sqlConnection, statement);
-            dataBaseCreationStatement.executeBatch();
-            dataBaseCreationStatement.close();
-
-        }
-
-    }*/
