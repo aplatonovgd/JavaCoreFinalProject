@@ -1,29 +1,27 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
 
 import com.google.gson.Gson;
-import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.ProductModel;
+import com.google.gson.GsonBuilder;
 import com.litmos.gridu.javacore.aplatonov.Models.RootResponseModel;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
+
 
 public class RootRequestProccessor {
 
     private HttpServletRequest request;
-    private DBProcessor dbProcessor;
-    private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    private AbstractCartRequestProcessor.ProductInfo productInfo;
 
-    public RootRequestProccessor(HttpServletRequest request, DBProcessor dbProcessor) throws IOException {
+    public RootRequestProccessor(HttpServletRequest request,AbstractCartRequestProcessor.ProductInfo productInfo) throws IOException {
         this.request = request;
-        this.dbProcessor = dbProcessor;
+        this.productInfo = productInfo;
     }
 
     public String processRequest() throws SQLException {
-        RootResponseModel rootResponseModel= new RootResponseModel(dbProcessor.getProducts());
+        RootResponseModel rootResponseModel= new RootResponseModel(productInfo.getProductModelList());
         return gson.toJson(rootResponseModel);
     }
 

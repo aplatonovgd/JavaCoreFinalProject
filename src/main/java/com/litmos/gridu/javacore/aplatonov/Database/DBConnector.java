@@ -1,5 +1,7 @@
 package com.litmos.gridu.javacore.aplatonov.Database;
 
+import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -82,6 +84,17 @@ public class DBConnector {
 
 
 
+
+    protected <T> PreparedStatement addBatchToPreparedStatementsHandler(PreparedStatement preparedStatement , T... parameters) throws SQLException, IllegalArgumentException {
+        if (parameters.length >0) {
+            AddParamsToStatement(preparedStatement, parameters);
+        }
+        preparedStatement.addBatch();
+        return preparedStatement;
+    }
+
+
+
     /**
      * @param function Resultset processor. Use it to process data from result Set.
      * @param sqlQuery  parametrized sql query
@@ -110,7 +123,7 @@ public class DBConnector {
 
 
 
-    protected <T> void insertStatementHandler(String sqlQuery, T... parameters) throws SQLException, IllegalArgumentException {
+    protected <T> void insertAndUpdateStatementsHandler(String sqlQuery, T... parameters) throws SQLException, IllegalArgumentException {
         try(Connection connection = getDataBaseConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
             if (parameters.length >0) {

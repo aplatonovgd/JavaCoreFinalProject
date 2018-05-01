@@ -1,13 +1,15 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.DisplayCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecureGetRequestValidator;
-import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.CheckoutRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecureGetRequestValidator;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
+import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
+import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.CheckoutRequestExcpetionProcessor;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecureGetValidatorResultProcessor;
+import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecurePostRequestsValidatorProcessor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,8 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/displayCart")
-public class DisplayCart extends HttpServlet {
+
+@WebServlet("/checkout")
+public class CheckoutServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -35,29 +38,16 @@ public class DisplayCart extends HttpServlet {
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = (LoginRequestProcessor.LoggedInUserInfo)
                 servletConfig.getServletContext().getAttribute("loggedInUserInfo");
 
+        CheckoutRequestProcessor checkoutRequestProcessor = new CheckoutRequestProcessor(req, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
 
-        DisplayCartRequestProcessor displayCartRequestProcessor = new DisplayCartRequestProcessor(req, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
+        CheckoutRequestExcpetionProcessor.processRequest(resp,checkoutRequestProcessor,getServletContext());
 
-        String responseBody;
-
-        try {
-            responseBody = displayCartRequestProcessor.processRequest();
-            resp.getWriter().write(responseBody);
-        }
-        catch (Exception e){
-            getServletContext().log("Something went wrong: " + e.getMessage());
-
-            resp.setStatus(500);
-            ErrorResponseProcessor errorResponseProcessor =
-                    new ErrorResponseProcessor("Something went wrong",
-                            "Something went wrong. Try again");
-            resp.getWriter().write(errorResponseProcessor.getResponseBody());
-        }
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        getServletContext().log("/displayCart request:");
+
+        getServletContext().log("/checkout request:");
         getServletContext().log("Request Method " + req.getMethod());
         getServletContext().log("Request headers validation started");
 
@@ -65,9 +55,9 @@ public class DisplayCart extends HttpServlet {
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =
                 (LoginRequestProcessor.LoggedInUserInfo) servletConfig.getServletContext().getAttribute("loggedInUserInfo");
 
-        SecureGetRequestValidator secureGetRequestValidator = new SecureGetRequestValidator(req,loggedInUserInfo,
+        SecureGetRequestValidator postRequestValidator = new SecureGetRequestValidator(req,loggedInUserInfo,
                 false, getServletContext());
-        ValidationResult validationResultModel  = secureGetRequestValidator.getRequestValidationResult();
+        ValidationResult validationResultModel = postRequestValidator.getRequestValidationResult();
 
         boolean isResultSuccess = SecureGetValidatorResultProcessor.isResultSuccess(resp,validationResultModel,getServletContext());
 

@@ -1,7 +1,7 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets.Helpers;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +10,7 @@ import java.io.IOException;
 public class RegisterRequestValidationResultProcessor {
 
 
-    public static boolean isResultSuccess(HttpServletResponse resp, ValidationResultModel validationResultModel, ServletContext servletContext) throws IOException {
+    public static boolean isResultSuccess(HttpServletResponse resp, ValidationResult validationResultModel, ServletContext servletContext) throws IOException {
 
         if(validationResultModel.isSuccess()) {
             servletContext.log("Request validation success");

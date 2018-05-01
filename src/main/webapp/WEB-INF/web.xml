@@ -22,6 +22,14 @@
         <param-name>hashPasswords</param-name>
         <param-value>true</param-value>
     </context-param>
+    <context-param>
+        <param-name>sessionExpirationTime</param-name>
+        <param-value>60000</param-value>
+    </context-param>
+    <context-param>
+        <param-name>sessionExpirationCheckInterval</param-name>
+        <param-value>30000</param-value>
+    </context-param>
 
 
 

@@ -1,13 +1,13 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.DisplayCartRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecureGetRequestValidator;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.ModifyCartItemRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
-import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecureGetValidatorResultProcessor;
+import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.ModifyCartItemRequestExcpetionProcessor;
+import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecurePostRequestsValidatorProcessor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,47 +17,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/displayCart")
-public class DisplayCart extends HttpServlet {
+@WebServlet("/modifyCartItem")
+public class ModifyCartItem extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         ServletConfig servletConfig = getServletConfig();
         DBProcessor dbProcessor = (DBProcessor) servletConfig.getServletContext().getAttribute("dbConnection");
-
         AbstractCartRequestProcessor.CartInfo cartInfo = (AbstractCartRequestProcessor.CartInfo)
                 servletConfig.getServletContext().getAttribute("cartInfo");
-
         AbstractCartRequestProcessor.ProductInfo productInfo = (AbstractCartRequestProcessor.ProductInfo)
                 servletConfig.getServletContext().getAttribute("productInfo");
-
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = (LoginRequestProcessor.LoggedInUserInfo)
                 servletConfig.getServletContext().getAttribute("loggedInUserInfo");
 
+        ModifyCartItemRequestProcessor modifyCartItemRequestProcessor = new ModifyCartItemRequestProcessor(req, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
 
-        DisplayCartRequestProcessor displayCartRequestProcessor = new DisplayCartRequestProcessor(req, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
+        ModifyCartItemRequestExcpetionProcessor.processRequest(resp,modifyCartItemRequestProcessor,getServletContext());
 
-        String responseBody;
 
-        try {
-            responseBody = displayCartRequestProcessor.processRequest();
-            resp.getWriter().write(responseBody);
-        }
-        catch (Exception e){
-            getServletContext().log("Something went wrong: " + e.getMessage());
-
-            resp.setStatus(500);
-            ErrorResponseProcessor errorResponseProcessor =
-                    new ErrorResponseProcessor("Something went wrong",
-                            "Something went wrong. Try again");
-            resp.getWriter().write(errorResponseProcessor.getResponseBody());
-        }
     }
+
+
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        getServletContext().log("/displayCart request:");
+
+        getServletContext().log("/modifyCartItem request:");
         getServletContext().log("Request Method " + req.getMethod());
         getServletContext().log("Request headers validation started");
 
@@ -65,14 +52,15 @@ public class DisplayCart extends HttpServlet {
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =
                 (LoginRequestProcessor.LoggedInUserInfo) servletConfig.getServletContext().getAttribute("loggedInUserInfo");
 
-        SecureGetRequestValidator secureGetRequestValidator = new SecureGetRequestValidator(req,loggedInUserInfo,
-                false, getServletContext());
-        ValidationResult validationResultModel  = secureGetRequestValidator.getRequestValidationResult();
 
-        boolean isResultSuccess = SecureGetValidatorResultProcessor.isResultSuccess(resp,validationResultModel,getServletContext());
+        SecurePostRequestValidator postRequestValidator = new SecurePostRequestValidator(req,loggedInUserInfo,
+                false, getServletContext());
+        ValidationResult validationResultModel = postRequestValidator.getRequestValidationResult();
+
+        boolean isResultSuccess = SecurePostRequestsValidatorProcessor.isResultSuccess(resp,validationResultModel,getServletContext());
 
         if (isResultSuccess){
-            doGet(req,resp);
+            doPost(req,resp);
         }
     }
 

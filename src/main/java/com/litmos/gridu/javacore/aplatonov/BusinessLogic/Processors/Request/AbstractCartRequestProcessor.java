@@ -1,26 +1,187 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.CartNotFoundException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
+import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
+import com.litmos.gridu.javacore.aplatonov.Models.ProductModel;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractCartRequestProcessor extends AbstractPostRequestProcessor {
-    CartInfo cartInfo;
 
-    protected AbstractCartRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor, CartInfo cartInfo) throws IOException {
+    protected CartInfo cartInfo;
+    protected   ProductInfo productInfo;
+    protected LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo;
+
+    protected AbstractCartRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor, CartInfo cartInfo, ProductInfo productInfo,
+                                           LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo) throws IOException {
         super(request, dbProcessor);
         this.cartInfo = cartInfo;
+        this.productInfo = productInfo;
+        this.loggedInUserInfo = loggedInUserInfo;
     }
 
 
+    protected String getUserIdByCookies(Cookie[] cookies) throws SessionNotFoundException {
+        List<Cookie> cookieList = RequestHelper.getCookiesList(cookies);
+
+        if (cookieList == null){
+            throw new SessionNotFoundException("session not found");
+        }
+        String sessionId = RequestHelper.getRequestSessionId(cookieList);
+        String userId = String.valueOf(loggedInUserInfo.getUserIdBySessionId(sessionId));
+
+        return userId;
+    }
+
+    public CartModel getCartModel(String userId) throws SessionNotFoundException {
+        try {
+            return cartInfo.getCartByUserId(userId);
+        }
+        catch (CartNotFoundException e) {
+            return createCartModel();
+        }
+    }
+
+    protected CartModel createCartModel(){
+        List<ItemModel> itemModelList = new ArrayList<>();
+
+        return new CartModel(itemModelList,String.valueOf(RequestHelper.getCreationTime()));
+    }
+
+    protected void  removeCartItemFromCart(CartModel cartModel, String cardItemId) throws ItemNotfoundException, IncorrectQuantityException {
+        String quantity = cartModel.getCartItemQuantity(cardItemId);
+        String productId = cartModel.getProductIdByCartItemId(cardItemId);
+
+        cartModel.removeCartItemByCartItemId(cardItemId);
+
+        productInfo.addProductQuantity(productId,quantity);
+    }
+
+    protected void removeItemsListFromCart(List<ItemModel> cartItems, CartModel cartModel) throws IncorrectQuantityException, ItemNotfoundException {
+        for(ItemModel item : cartItems){
+            withdrawProductFromProductList(cartModel,item.getCartItemId());
+        }
+    }
+
+
+    public void withdrawProductFromProductList(CartModel cartModel, String cardItemId) throws ItemNotfoundException, IncorrectQuantityException {
+        String quantity = cartModel.getCartItemQuantity(cardItemId);
+        String productId = cartModel.getProductIdByCartItemId(cardItemId);
+
+        productInfo.withdrawProductFromProductDatabaseQuantity(productId,quantity);
+    }
+
+
+
+    public static class ProductInfo {
+
+         private List<ProductModel> productModelList;
+
+         public ProductInfo(List<ProductModel> productModel){
+            this.productModelList = productModel;
+         }
+
+         public List<ProductModel> getProductModelList() {
+            return productModelList;
+         }
+
+         protected void updateProductInfo(List<ProductModel> productModelList){
+             this.productModelList = productModelList;
+         }
+
+
+         protected ItemModel getItemFromProductInfo(String productId) throws ItemNotfoundException {
+
+             Optional<ProductModel> productModelOptional = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+             ItemModel itemModel;
+
+            if (productModelOptional.isPresent())
+            {
+                ProductModel productModel = productModelOptional.get();
+                return new ItemModel(productModel.getId(),productModel.getTitle(),productModel.getQuantity(),productModel.getPrice());
+            }
+            else{
+                throw new ItemNotfoundException("Product not found in product list");
+            }
+         }
+
+        protected void withdrawProductFromProductDatabaseQuantity(String productId, String quantity) throws ItemNotfoundException, IncorrectQuantityException {
+            Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+            if (productModel.isPresent()) {
+                String productListQuantityOriginal = productModel.get().getAvailableInDataBase();
+
+                int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) - Integer.parseInt(quantity);
+                if (ExpectedQuantity < 0){
+                    throw new IncorrectQuantityException("Products quantity can't be lower the zero");
+                }
+                else {
+                    String newProductListQuantity = String.valueOf(ExpectedQuantity);
+                    productModel.get().setDatabaseQuantity(newProductListQuantity);
+                }
+
+            } else {
+                throw new ItemNotfoundException("Product not found in product list");
+            }
+        }
+
+
+        protected void addProductQuantity(String productId, String quantity) throws ItemNotfoundException, IncorrectQuantityException {
+            Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+            if (productModel.isPresent()) {
+
+                int databaseQuantity = Integer.valueOf(productModel.get().getAvailableInDataBase());
+                String productListQuantityOriginal = productModel.get().getQuantity();
+                int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) + Integer.parseInt(quantity);
+
+                if(ExpectedQuantity > databaseQuantity){
+                    throw new IncorrectQuantityException("Not enough items in the database");
+                }
+                else {
+
+                    productModel.get().setQuantity(String.valueOf(ExpectedQuantity));
+                }
+
+            } else {
+                throw new ItemNotfoundException("Product not found in product list");
+            }
+        }
+
+
+        protected void withdrawProductQuantity(String productId, String quantity) throws ItemNotfoundException, IncorrectQuantityException {
+            Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+            if (productModel.isPresent()) {
+
+                String productListQuantityOriginal = productModel.get().getQuantity();
+
+                int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) - Integer.parseInt(quantity);
+                if (ExpectedQuantity < 0){
+                    throw new IncorrectQuantityException("Products quantity can't be lower the zero");
+                }
+                else {
+                    String newProductListQuantity = String.valueOf(ExpectedQuantity);
+                    productModel.get().setQuantity(newProductListQuantity);
+                }
+
+            } else {
+                throw new ItemNotfoundException("Product not found in product list");
+            }
+        }
+
+    }
+
     public static class CartInfo {
 
-        private Map<String, CartModel> userIdToCartMap = new HashMap<>();
+        public Map<String, CartModel> getUserIdToCartMap() {
+            return userIdToCartMap;
+        }
+
+        protected Map<String, CartModel> userIdToCartMap = new HashMap<>();
 
         public CartModel getCartByUserId(String userId) throws CartNotFoundException {
             CartModel cartModel;
@@ -37,10 +198,14 @@ public abstract class AbstractCartRequestProcessor extends AbstractPostRequestPr
             userIdToCartMap.put(userId, cartModel);
         }
 
+
         protected void replaceCartInfo(String userId, CartModel cartModel){
             userIdToCartMap.replace(userId,cartModel);
         }
 
+        protected void removeCart(String userId){
+            userIdToCartMap.remove(userId);
+        }
 
     }
 }

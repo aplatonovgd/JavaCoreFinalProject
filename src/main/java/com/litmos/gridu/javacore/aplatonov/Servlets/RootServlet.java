@@ -1,12 +1,13 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.RootRequestProccessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecureGetRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecureGetValidatorResultProcessor;
 
 import javax.servlet.ServletConfig;
@@ -25,8 +26,11 @@ public class RootServlet extends HttpServlet {
 
         ServletConfig servletConfig = getServletConfig();
         DBProcessor dbProcessor = (DBProcessor) servletConfig.getServletContext().getAttribute("dbConnection");
+        AbstractCartRequestProcessor.ProductInfo productInfo =
+                (AbstractCartRequestProcessor.ProductInfo) servletConfig.getServletContext().getAttribute("productInfo");
 
-        RootRequestProccessor rootRequestProccessor = new RootRequestProccessor(req, dbProcessor);
+
+        RootRequestProccessor rootRequestProccessor = new RootRequestProccessor(req, productInfo);
 
         String responseBody;
         try {
@@ -56,7 +60,7 @@ public class RootServlet extends HttpServlet {
 
         SecureGetRequestValidator secureGetRequestValidator = new SecureGetRequestValidator(req,loggedInUserInfo,
                 false, getServletContext());
-        ValidationResultModel validationResultModel  = secureGetRequestValidator.getRequestValidationResult();
+        ValidationResult validationResultModel  = secureGetRequestValidator.getRequestValidationResult();
 
         boolean isResultSuccess = SecureGetValidatorResultProcessor.isResultSuccess(resp,validationResultModel,getServletContext());
 

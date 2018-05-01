@@ -9,7 +9,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.Log
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.LoginRequestValidationResultProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -32,6 +32,7 @@ public class LoginServlet extends HttpServlet {
         DBProcessor dbProcessor = (DBProcessor) servletConfig.getServletContext().getAttribute("dbConnection");
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = (LoginRequestProcessor.LoggedInUserInfo) servletConfig.getServletContext().getAttribute("loggedInUserInfo");
         boolean hashPasswords = (boolean) servletConfig.getServletContext().getAttribute("hashPasswords");
+
 
         getServletContext().log("Post request processor started");
 
@@ -84,7 +85,7 @@ public class LoginServlet extends HttpServlet {
 
         SecurePostRequestValidator postRequestValidator = new SecurePostRequestValidator(req, loggedInUserInfo,
                 true, getServletContext());
-        ValidationResultModel validationResultModel = postRequestValidator.getRequestValidationResult();
+        ValidationResult validationResultModel = postRequestValidator.getRequestValidationResult();
 
         boolean isResultSuccess = LoginRequestValidationResultProcessor.isResultSuccess(resp,validationResultModel,getServletContext());
 

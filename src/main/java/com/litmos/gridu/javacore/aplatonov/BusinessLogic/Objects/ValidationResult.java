@@ -1,8 +1,8 @@
-package com.litmos.gridu.javacore.aplatonov.Models;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects;
 
 import com.google.gson.annotations.Expose;
 
-public class ValidationResultModel {
+public class ValidationResult {
 
     @Expose
     private boolean success;
@@ -12,11 +12,11 @@ public class ValidationResultModel {
     private String description;
 
 
-    public ValidationResultModel(boolean isSuccess){
+    public ValidationResult(boolean isSuccess){
         this.success = isSuccess;
     }
 
-    public ValidationResultModel(boolean isSuccess, String message, String description){
+    public ValidationResult(boolean isSuccess, String message, String description){
         this.success = isSuccess;
         this.message = message;
         this.description = description;

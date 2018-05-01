@@ -4,14 +4,12 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFo
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class AbstractSecureRequestValidator extends AbstractRequestValidator {
 
@@ -34,8 +32,8 @@ public abstract class AbstractSecureRequestValidator extends AbstractRequestVali
 
 
     @Override
-    public ValidationResultModel getRequestValidationResult(){
-        ValidationResultModel validationResultModel;
+    public ValidationResult getRequestValidationResult(){
+        ValidationResult validationResultModel;
 
         validationResultModel = getHttpHeadersValidationResult(request);
 
@@ -48,7 +46,7 @@ public abstract class AbstractSecureRequestValidator extends AbstractRequestVali
     }
 
 
-    protected ValidationResultModel getCookiesValidationResult(){
+    protected ValidationResult getCookiesValidationResult(){
 
         if (isUnauthorizedRequestExpected){
             servletContext.log("Validate cookies for unauthorized request started");
@@ -61,28 +59,28 @@ public abstract class AbstractSecureRequestValidator extends AbstractRequestVali
 
     }
 
-    protected ValidationResultModel getCookiesValidationResultForAuthorizedUser() {
+    protected ValidationResult getCookiesValidationResultForAuthorizedUser() {
        try {
            CheckSessionIdAndPasswordHash();
         }
         catch (SessionNotFoundException e ) {
             servletContext.log(e.getMessage());
-            return new ValidationResultModel(false,"Unauthorized", "User is not authorized");
+            return new ValidationResult(false,"Unauthorized", "User is not authorized");
         }
 
-       return new ValidationResultModel(true);
+       return new ValidationResult(true);
     }
 
-    protected ValidationResultModel getCookiesValidationResultForUnauthorizedUser() {
+    protected ValidationResult getCookiesValidationResultForUnauthorizedUser() {
         try {
             CheckSessionIdAndPasswordHash();
         }
         catch (SessionNotFoundException e ) {
             servletContext.log(e.getMessage());
-            return new ValidationResultModel(true);
+            return new ValidationResult(true);
         }
 
-        return new ValidationResultModel(false, "UserAlreadyLoggedIn","Log out to do this operation");
+        return new ValidationResult(false, "UserAlreadyLoggedIn","Log out to do this operation");
     }
 
     protected void CheckSessionIdAndPasswordHash() throws SessionNotFoundException {

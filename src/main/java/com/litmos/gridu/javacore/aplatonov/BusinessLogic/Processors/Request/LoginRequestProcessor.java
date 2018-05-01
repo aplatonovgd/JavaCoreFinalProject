@@ -30,14 +30,15 @@ private LoggedInUserInfo loggedInUserInfo;
     public String processRequest() throws SQLException, InvalidJsonException, IncorrectNameOrPasswordException, NoSuchAlgorithmException {
 
         LoginRequestModel loginRequest = parseJson(requestBody);
-        List<LoginRequestModel> registeredUsers = dbProcessor.getLoginRequestModelListByLogin(loginRequest.getEmail());
+        List<LoggedinUser> registeredUsers = dbProcessor.getLoginRequestModelListByLogin(loginRequest.getEmail());
 
-        Optional<LoginRequestModel> databaseUser = checkLoginInDatabase(loginRequest.getEmail(), registeredUsers);
-        checkPassword(hashPassword,loginRequest.getPassword(), databaseUser.get().getPassword());
+        Optional<LoggedinUser> databaseUser = checkLoginInDatabase(loginRequest.getEmail(), registeredUsers);
+        checkPassword(hashPassword,loginRequest.getPassword(), databaseUser.get().getUserPasswordHash());
 
         String sessionId = RequestHelper.generateSessionId();
         long sessionCreatedTime = RequestHelper.getCreationTime();
-        LoggedinUser loggedinUser = new LoggedinUser(databaseUser.get().getUserId(),databaseUser.get().getEmail(),databaseUser.get().getPassword(),sessionCreatedTime);
+
+        LoggedinUser loggedinUser = new LoggedinUser(databaseUser.get().getUserId(),databaseUser.get().getUserEmail(),databaseUser.get().getUserPasswordHash(),sessionCreatedTime);
         loggedInUserInfo.addLoginInfo(sessionId, loggedinUser);
 
         return sessionId;
@@ -56,10 +57,10 @@ private LoggedInUserInfo loggedInUserInfo;
         }
     }
 
-    private  Optional<LoginRequestModel> checkLoginInDatabase(String email, List<LoginRequestModel> registeredUsers) throws IncorrectNameOrPasswordException {
+    private  Optional<LoggedinUser> checkLoginInDatabase(String email, List<LoggedinUser> registeredUsers) throws IncorrectNameOrPasswordException {
         //final String emailToCheck = email;
-        Optional<LoginRequestModel> dataBaseUser = registeredUsers.stream().
-                filter(p -> p.getEmail().equals(email)).
+        Optional<LoggedinUser> dataBaseUser = registeredUsers.stream().
+                filter(p -> p.getUserEmail().equals(email)).
                 findFirst();
 
         if (!dataBaseUser.isPresent()){
@@ -97,6 +98,20 @@ private LoggedInUserInfo loggedInUserInfo;
             }
             return loggedinUser;
         }
+
+        public int getUserIdBySessionId(String sessionId) throws SessionNotFoundException {
+            int userId;
+            if (sessionIdToUserMap.containsKey(sessionId)) {
+                LoggedinUser loggedinUser = sessionIdToUserMap.get(sessionId);
+                userId = loggedinUser.getUserId();
+            }
+            else {
+                throw new SessionNotFoundException("Session not found");
+            }
+
+            return userId;
+        }
+
 
         private void addLoginInfo(String sessionId, LoggedinUser loggedinUser) {
 

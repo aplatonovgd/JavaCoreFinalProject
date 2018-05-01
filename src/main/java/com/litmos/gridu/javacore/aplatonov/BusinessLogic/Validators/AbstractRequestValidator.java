@@ -1,6 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators;
 
-import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,16 +15,16 @@ public abstract class AbstractRequestValidator implements BaseRequestValidator {
     }
 
     @Override
-    public ValidationResultModel getRequestValidationResult(){
-        ValidationResultModel validationResultModel;
+    public ValidationResult getRequestValidationResult(){
+        ValidationResult validationResultModel;
         validationResultModel = getHttpHeadersValidationResult(request);
         return validationResultModel;
     }
 
-    protected ValidationResultModel getHttpHeadersValidationResult(HttpServletRequest request){
+    protected ValidationResult getHttpHeadersValidationResult(HttpServletRequest request){
         return getRequestMethodValidationResult(methodName);
     }
 
-    protected abstract ValidationResultModel getRequestMethodValidationResult(String requestMethodName);
+    protected abstract ValidationResult getRequestMethodValidationResult(String requestMethodName);
 
 }

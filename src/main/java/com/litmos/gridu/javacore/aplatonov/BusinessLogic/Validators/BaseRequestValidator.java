@@ -1,10 +1,10 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators;
 
-import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 public interface BaseRequestValidator {
 
-    ValidationResultModel getRequestValidationResult();
+    ValidationResult getRequestValidationResult();
 
    // boolean areHttpHeadersValid(HttpServletRequest request);
 

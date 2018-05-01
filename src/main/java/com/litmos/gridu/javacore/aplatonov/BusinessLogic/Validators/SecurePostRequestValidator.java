@@ -1,7 +1,7 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.ValidationResultModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -16,16 +16,16 @@ public class SecurePostRequestValidator extends AbstractSecureRequestValidator {
 
 
     @Override
-    protected ValidationResultModel getRequestMethodValidationResult(String requestMethodName) {
-        ValidationResultModel validationResultModel;
+    protected ValidationResult getRequestMethodValidationResult(String requestMethodName) {
+        ValidationResult validationResultModel;
         boolean isValid = false;
 
         if (requestMethodName.equals("POST") ){
             isValid = true;
-            validationResultModel = new ValidationResultModel(true);
+            validationResultModel = new ValidationResult(true);
         }
         else {
-            validationResultModel = new ValidationResultModel(false, "InvalidRequestMethod", "Only POST method is allowed");
+            validationResultModel = new ValidationResult(false, "InvalidRequestMethod", "Only POST method is allowed");
         }
         return validationResultModel;
     }

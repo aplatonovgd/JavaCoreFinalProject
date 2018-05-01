@@ -1,8 +1,9 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects;
+package com.litmos.gridu.javacore.aplatonov.Models;
 
 import com.google.gson.annotations.Expose;
 
-public class Item {
+public class ItemModel {
+
 
     @Expose (serialize = false, deserialize =  false)
     private String productId;
@@ -20,7 +21,7 @@ public class Item {
     private String subtotal;
 
 
-    public Item(String productId, String title, String quantity, String productPrice){
+    public ItemModel(String productId, String title, String quantity, String productPrice){
         this.productId = productId;
         this.title = title;
         this.quantity = quantity;
@@ -49,7 +50,16 @@ public class Item {
     }
 
 
+    public String getCartItemId() {
+        return cartItemId;
+    }
+
     public void setCartItemId(String cartItemId){
         this.cartItemId = cartItemId;
     }
+
+    public String getProductId() {
+        return productId;
+    }
+
 }

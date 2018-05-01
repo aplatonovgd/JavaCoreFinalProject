@@ -22,10 +22,11 @@ public abstract class AbstractPostRequestProcessor {
 
     protected AbstractPostRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor) throws IOException {
         this.request = request;
-        this.requestBody = getBody(request);
+        if (request != null){
+            this.requestBody = getBody(request);
+        }
         this.dbProcessor = dbProcessor;
 
-        getBody(request);
     }
 
     protected abstract Object parseJson(String json) throws InvalidJsonException;
