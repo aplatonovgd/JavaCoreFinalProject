@@ -3,7 +3,7 @@
 Simple and not tread safe REST API shop service.
 Created as final task for my java core course.
 
-Property of griddynamics.com
+Property of [https://griddynamics.com]griddynamics.com
 
 ## Requirments
 - MySQL server
@@ -13,6 +13,8 @@ Property of griddynamics.com
 ### Supported Rest methods
 
 #### Security
+
+NB: Make sure that cookies that your client supports cookies.
 
 1. **/register - register user  (POST)**
 Example request:
@@ -50,13 +52,16 @@ Example request:
 id - id of the item in the cart
 ```
 6. **/checkout - checkout cart (GET)**
-7. **/displayOrder - display your orders(GET)**
+7. **/displayOrders - display your orders(GET)**
 
 #### Web.xml params
-**databaseUrl - database url**
-**databaseName - database name**
-**databaseLogin - database login**
-**databasePassword -database password**
-**hashPasswords - if true server will hash password**
-**sessionExpirationTime in ms- defines how long user should be incactive until his cart expires**
-**sessionExpirationCheckInterval in ms - sleep timeout for a thread that checks expired carts**
+1. **databaseUrl - database url**
+2. **databaseName - database name**
+3. **databaseLogin - database login**
+4. **databasePassword -database password**
+5. **hashPasswords - if true server will hash password**
+6. **sessionExpirationTime in ms- defines how long user should be incactive until his cart expires**
+7. **sessionExpirationCheckInterval in ms - sleep timeout for a thread that checks expired carts**
+
+##### How to test it
+javaCore.postman_collection.json - property for Postman to start with this project.
