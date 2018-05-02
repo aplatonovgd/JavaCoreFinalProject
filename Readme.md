@@ -16,13 +16,11 @@ Property of https://griddynamics.com
 
 Make sure that your client supports cookies.
 
-1. **/register - register user (POST)**<br/>
-Example request:
+1. **/register - register user (POST)** Example request:
 ```
 {"email":"test@test.com", "password":"123456"}
 ```
-2. **/login  - login (POST)**<br/>
-Example request:
+2. **/login  - login (POST)**<br/> Example request:
 ```
 {"email":"test@test.com", "password":"123456"}
 ```
@@ -31,22 +29,19 @@ Example request:
 #### Shop operations
 1. **/  - get all products (GET)**
 2. **/displayCart - display your cart (GET)**
-3. **/addItemToCart - add item to the cart(POST)**<br/>
-Example request:
+3. **/addItemToCart - add item to the cart(POST)** Example request:
 ```
 {"id":"3", "quantity":"10"}
 id - product id
 quantity - product quantity
 ```
-4. **/modifyCartItem - modify item in the cart(POST)**<br/>
-Example request:
+4. **/modifyCartItem - modify item in the cart(POST)** Example request:
 ```
 {"id":"1", "quantity":"0"}
 id - id of the item in the cart
 quantity - product quantity
 ```
-5. **/removeCartItem - remove item from the cart(POST)**<br/>
-Example request:
+5. **/removeCartItem - remove item from the cart(POST)** Example request:
 ```
 {"id":"1"}
 id - id of the item in the cart
