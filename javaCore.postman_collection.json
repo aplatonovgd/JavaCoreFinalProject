@@ -1,0 +1,269 @@
+{
+	"info": {
+		"_postman_id": "6a14c941-0a76-450c-9731-17e7d6a641f7",
+		"name": "javaCore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:8080/javaCore/register",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/javaCore/register",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"12345@alesha.com\", \"password\":\"123\"}"
+				},
+				"url": {
+					"raw": "localhost:8080/javaCore/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"12345@alesha.com\", \"password\":\"123\"}"
+				},
+				"url": {
+					"raw": "localhost:8080/javaCore/register",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/javaCore/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/addItemToCart",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":\"2\", \"quantity\":\"0\"}"
+				},
+				"url": {
+					"raw": "localhost:8080/javaCore/addItemToCart",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"addItemToCart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/displayCart",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/javaCore/displayCart",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"displayCart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/modifyCartItem",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":\"1\", \"quantity\":\"123\"}"
+				},
+				"url": {
+					"raw": "localhost:8080/javaCore/modifyCartItem",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"modifyCartItem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/removeCartItem",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":\"1\"}"
+				},
+				"url": {
+					"raw": "localhost:8080/javaCore/removeCartItem",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"removeCartItem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/checkout",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/javaCore/checkout",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"checkout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/logout",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/javaCore/logout",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/javaCore/displayOrders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/javaCore/displayOrders",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"javaCore",
+						"displayOrders"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
