@@ -3,7 +3,7 @@ package com.litmos.gridu.javacore.aplatonov.Servlets.Helpers;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.EmptyCartException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectQuantityException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.ItemNotfoundException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.CheckoutRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.CheckoutRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.CheckoutResponseProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 
@@ -17,6 +17,7 @@ public class CheckoutRequestExcpetionProcessor {
 
     public static void processRequest (HttpServletResponse resp, CheckoutRequestProcessor checkoutRequestProcessor
                                        ,ServletContext servletContext) throws IOException {
+        resp.setContentType("application/json");
         try {
             String orderId = checkoutRequestProcessor.processRequest();
             CheckoutResponseProcessor checkoutResponseProcessor = new CheckoutResponseProcessor(orderId);

@@ -8,7 +8,7 @@
     </context-param>
     <context-param>
         <param-name>databaseName</param-name>
-        <param-value>test1</param-value>
+        <param-value>PlatonovJavaCore</param-value>
     </context-param>
     <context-param>
         <param-name>databaseLogin</param-name>
@@ -30,36 +30,10 @@
         <param-name>sessionExpirationCheckInterval</param-name>
         <param-value>30000</param-value>
     </context-param>
-
-
-
     <listener>
      	<listener-class>
            com.litmos.gridu.javacore.aplatonov.Servlets.ServerInit
         </listener-class>
     </listener>
-    <servlet>
-        <servlet-name>HomePageServlet</servlet-name>
-        <servlet-class>com.litmos.gridu.javacore.aplatonov.Servlets.RootServlet</servlet-class>
-        <display-name>HelloWorldServlet</display-name>
-        <init-param>
-            <param-name>Greetings</param-name>
-            <param-value>Hello</param-value>
-        </init-param>
-        <context-param>
-            <param-name>myParam</param-name>
-            <param-value>the value</param-value>
-        </context-param>
-    </servlet>
-
-    <servlet>
-        <servlet-name>ServerInit</servlet-name>
-        <servlet-class>com.litmos.gridu.javacore.aplatonov.Servlets.ServerInit</servlet-class>
-        <init-param>
-            <param-name>Greetings</param-name>
-            <param-value>Hello</param-value>
-        </init-param>
-    </servlet>
-
 
 </web-app>

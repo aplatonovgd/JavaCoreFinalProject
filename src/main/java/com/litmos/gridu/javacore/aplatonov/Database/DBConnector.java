@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -132,8 +133,6 @@ public class DBConnector {
             preparedStatement.execute();
         }
     }
-
-//TODO CHANGE USER TABLE TEST DATA
 
     /**
      * Adds paramters to the PreparedStatement

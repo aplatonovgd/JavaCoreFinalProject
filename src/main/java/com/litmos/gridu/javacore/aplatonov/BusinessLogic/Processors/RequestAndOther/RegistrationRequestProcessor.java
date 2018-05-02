@@ -1,6 +1,8 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidEmailException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.UserExistException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
@@ -23,11 +25,14 @@ public class RegistrationRequestProcessor extends AbstractPostRequestProcessor {
     }
 
 
-    public void processRequest() throws InvalidJsonException, SQLException, UserExistException, NoSuchAlgorithmException {
+    public void processRequest() throws InvalidJsonException, SQLException, UserExistException, NoSuchAlgorithmException, InvalidEmailException, InvalidPasswordException {
 
         RegisterRequestModel registerRequest = parseJson(requestBody);
+        checkUserEmail(registerRequest.getEmail());
+        checkUserPassword(registerRequest.getPassword());
 
         List<RegisterRequestModel> registeredUsers = dbProcessor.getRegisterRequestModelListByLogin(registerRequest.getEmail());
+
 
         final String emailToCheck =registerRequest.getEmail();
         Optional<RegisterRequestModel> checkUser = registeredUsers.stream().
@@ -35,7 +40,7 @@ public class RegistrationRequestProcessor extends AbstractPostRequestProcessor {
                 findAny();
 
         if (checkUser.isPresent()){
-            throw new UserExistException("LoggedinUser already exist");
+            throw new UserExistException("User already exist");
         }
         else {
 
@@ -55,8 +60,14 @@ public class RegistrationRequestProcessor extends AbstractPostRequestProcessor {
 
       RegisterRequestModel registerRequest =  gson.fromJson(json, RegisterRequestModel.class);
 
-      if (registerRequest == null ||  registerRequest.getEmail() == null || registerRequest.getPassword() == null){
-         throw new InvalidJsonException("Invalid JSON");
+      try{
+          registerRequest =  gson.fromJson(json, RegisterRequestModel.class);
+          if (registerRequest == null ||  registerRequest.getEmail() == null || registerRequest.getPassword() == null){
+              throw new InvalidJsonException("Invalid JSON");
+          }
+      }
+      catch (Exception e ){
+        throw  new InvalidJsonException(e.getMessage());
       }
 
       return registerRequest;

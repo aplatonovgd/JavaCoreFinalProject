@@ -11,14 +11,15 @@ public class SecurePostRequestsValidatorProcessor {
 
     public static boolean isResultSuccess(HttpServletResponse resp, ValidationResult validationResultModel, ServletContext servletContext) throws IOException {
 
+        resp.setContentType("application/json");
         if(validationResultModel.isSuccess()) {
-            servletContext.log("Request validation success");
+            servletContext.log("RequestAndOther validation success");
             // doPost(req,resp);
             return true;
         }
         else if(!validationResultModel.isSuccess() && validationResultModel.getMessage()=="Unauthorized") {
 
-            servletContext.log("Request validation failed - "  + validationResultModel.getMessage());
+            servletContext.log("RequestAndOther validation failed - "  + validationResultModel.getMessage());
             ErrorResponseProcessor errorResponseProcessor =
                     new ErrorResponseProcessor(validationResultModel.getMessage(), validationResultModel.getDescription());
 
@@ -28,7 +29,7 @@ public class SecurePostRequestsValidatorProcessor {
             resp.getWriter().write(errorResponseProcessor.getResponseBody());
         }
         else {
-            servletContext.log("Request validation failed - "  + validationResultModel.getMessage());
+            servletContext.log("RequestAndOther validation failed - "  + validationResultModel.getMessage());
             ErrorResponseProcessor errorResponseProcessor =
                     new ErrorResponseProcessor(validationResultModel.getMessage(), validationResultModel.getDescription());
 

@@ -9,9 +9,6 @@ import java.util.Optional;
 
 public class CartModel {
 
-    //TODO REMOVE
-    Object key1 = new Object();
-
 
     @Expose(serialize = false, deserialize = false)
     private String cartCreatedTime;
@@ -28,7 +25,15 @@ public class CartModel {
     }
 
     public void addItem(ItemModel itemModel){
-        cartItems.add(itemModel);
+        Optional<ItemModel> matchedItem = cartItems.stream().filter(x -> x.getProductId().equals(itemModel.getProductId())).findFirst();
+
+        if(matchedItem.isPresent()){
+            Integer quantity = Integer.valueOf(matchedItem.get().getQuantity()) + Integer.valueOf(itemModel.getQuantity());
+            matchedItem.get().setQuantity(String.valueOf(quantity));
+        }
+        else {
+            cartItems.add(itemModel);
+        }
         updateOrderAndTotal();
     }
 
@@ -88,6 +93,9 @@ public class CartModel {
        updateOrderAndTotal();
     }
 
+    public void updateCartCreatedTime(String cartCreatedTime){
+        this.cartCreatedTime =cartCreatedTime;
+    }
 
 
     private void setTotal(String total){
@@ -95,17 +103,15 @@ public class CartModel {
     }
 
 
-    //TODO REMOVE COMMENTS
     private void updateOrderAndTotal(){
         int i = 0;
         double total =0;
         Iterator<ItemModel> itemIterator = cartItems.listIterator();
         while (itemIterator.hasNext()){
             i++;
-            ItemModel itemModel = itemIterator.next();//.setCartItemId(String.valueOf(i));
+            ItemModel itemModel = itemIterator.next();
             itemModel.setCartItemId(String.valueOf(i));
             total += Double.parseDouble(itemModel.getSubtotal());
-           // total += Double.parseDouble(itemIterator..getSubtotal());
         }
         setTotal(String.valueOf(total));
     }

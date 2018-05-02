@@ -1,4 +1,4 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
@@ -20,7 +20,7 @@ public class CheckoutRequestProcessor extends AbstractCartRequestProcessor {
 
     public String processRequest() throws SessionNotFoundException, IncorrectQuantityException, IOException, SQLException, EmptyCartException, ItemNotfoundException {
 
-        String userId = getUserIdByCookies(request.getCookies());
+        String userId = RequestHelper.getUserIdByCookies(request.getCookies(),loggedInUserInfo);
 
         CartModel cartModel = getCartModel(userId);
         List<ItemModel> cartItems = cartModel.getCartItems();
@@ -43,19 +43,19 @@ public class CheckoutRequestProcessor extends AbstractCartRequestProcessor {
 
         /*3. Create Order */
 
-        String orderId = createOrder(cartItems, userId);
-
+        String orderId = createOrder(cartItems, userId, cartModel.getTotal());
         /*4. Delete Cart from Cart List */
         cartInfo.removeCart(userId);
 
         return orderId;
     }
 
-    public String createOrder (List<ItemModel> cartItems, String userId) throws IOException, SQLException {
+    public String createOrder (List<ItemModel> cartItems, String userId, String total) throws IOException, SQLException {
 
         String orderId = RequestHelper.generateSessionId();
+        String orderDate = RequestHelper.getCurrentDateTimeSimpleFormat();
 
-        dbProcessor.createOrder(cartItems, orderId, userId);
+        dbProcessor.createOrder(cartItems, orderId, userId, orderDate);
 
         return orderId;
     }

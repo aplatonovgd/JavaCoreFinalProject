@@ -1,9 +1,10 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidCredentialsException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.UserExistException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.RegistrationRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.RegistrationRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
@@ -42,29 +43,37 @@ public class RegisterServlet extends HttpServlet{
             ErrorResponseProcessor errorResponseProcessor =
                     new ErrorResponseProcessor(e.getMessage(),
                             "Your request has invalid parameters");
+            resp.addHeader("Content-Type","application/json");
             resp.getWriter().write(errorResponseProcessor.getResponseBody());
         }
 
         catch (UserExistException e) {
             getServletContext().log(e.getMessage());
             resp.setStatus(409);
+            resp.addHeader("Content-Type","application/json");
             ErrorResponseProcessor errorResponseProcessor =
                     new ErrorResponseProcessor("User already exists",
                             "User already exists in the database");
             resp.getWriter().write(errorResponseProcessor.getResponseBody());
         }
-
+        catch (InvalidCredentialsException e){
+            getServletContext().log("Invalid Credentials:" + e.getMessage());
+            resp.setStatus(401);
+            resp.addHeader("WWW-Authenticate", "Basic");
+            ErrorResponseProcessor errorResponseProcessor =
+                    new ErrorResponseProcessor("Invalid credentials",
+                            "Invalid email or password");
+            resp.getWriter().write(errorResponseProcessor.getResponseBody());
+        }
         catch (Exception e ){
             getServletContext().log("Something went wrong: " + e.getMessage());
-            getServletContext().log(e.getStackTrace().toString()); // TODO <-- CHECK
-
+            getServletContext().log(e.getStackTrace().toString());
+            resp.addHeader("Content-Type","application/json");
             resp.setStatus(500);
             ErrorResponseProcessor errorResponseProcessor =
                     new ErrorResponseProcessor("Something went wrong",
                             "Something went wrong. Try again");
             resp.getWriter().write(errorResponseProcessor.getResponseBody());
-           //TODO REMOVE. DEBUG ONLY
-            // resp.getWriter().write(e.getMessage());
         }
 
     }
@@ -73,8 +82,8 @@ public class RegisterServlet extends HttpServlet{
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         getServletContext().log("Register request:");
-        getServletContext().log("Request Method " + req.getMethod());
-        getServletContext().log("Request headers validation started");
+        getServletContext().log("RequestAndOther Method " + req.getMethod());
+        getServletContext().log("RequestAndOther headers validation started");
 
         ServletConfig servletConfig = getServletConfig();
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =

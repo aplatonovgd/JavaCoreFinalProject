@@ -1,9 +1,7 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.LoginRequestModel;
@@ -18,7 +16,14 @@ public class LoginRequestProcessor extends AbstractPostRequestProcessor {
 
 private boolean hashPassword;
 
-private LoggedInUserInfo loggedInUserInfo;
+protected LoggedInUserInfo loggedInUserInfo;
+
+
+    /*ONLY FOR LOGOUT PURPOSE*/
+    public LoginRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor, LoggedInUserInfo loggedInUserInfo) throws IOException {
+        super(request, dbProcessor);
+        this.loggedInUserInfo = loggedInUserInfo;
+    }
 
     public LoginRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor, boolean hashPassword, LoggedInUserInfo loggedInUserInfo) throws IOException {
         super(request, dbProcessor);
@@ -27,16 +32,19 @@ private LoggedInUserInfo loggedInUserInfo;
     }
 
 
-    public String processRequest() throws SQLException, InvalidJsonException, IncorrectNameOrPasswordException, NoSuchAlgorithmException {
+    public String processRequest() throws SQLException, InvalidJsonException, IncorrectNameOrPasswordException, NoSuchAlgorithmException, InvalidEmailException, InvalidPasswordException, SessionNotFoundException {
 
         LoginRequestModel loginRequest = parseJson(requestBody);
+        checkUserEmail(loginRequest.getEmail());
+        checkUserPassword(loginRequest.getPassword());
+
         List<LoggedinUser> registeredUsers = dbProcessor.getLoginRequestModelListByLogin(loginRequest.getEmail());
 
         Optional<LoggedinUser> databaseUser = checkLoginInDatabase(loginRequest.getEmail(), registeredUsers);
         checkPassword(hashPassword,loginRequest.getPassword(), databaseUser.get().getUserPasswordHash());
 
         String sessionId = RequestHelper.generateSessionId();
-        long sessionCreatedTime = RequestHelper.getCreationTime();
+        long sessionCreatedTime = RequestHelper.getCreationTimeMillis();
 
         LoggedinUser loggedinUser = new LoggedinUser(databaseUser.get().getUserId(),databaseUser.get().getUserEmail(),databaseUser.get().getUserPasswordHash(),sessionCreatedTime);
         loggedInUserInfo.addLoginInfo(sessionId, loggedinUser);
@@ -74,11 +82,18 @@ private LoggedInUserInfo loggedInUserInfo;
     @Override
     protected LoginRequestModel parseJson(String json) throws InvalidJsonException {
 
-        LoginRequestModel loginRequest =  gson.fromJson(json, LoginRequestModel.class);
-
-        if (loginRequest == null ||  loginRequest.getEmail() == null || loginRequest.getPassword() == null){
-            throw new InvalidJsonException("Invalid JSON");
+        LoginRequestModel loginRequest;
+        try {
+            loginRequest = gson.fromJson(json, LoginRequestModel.class);
+            if (loginRequest == null ||  loginRequest.getEmail() == null || loginRequest.getPassword() == null){
+                throw new InvalidJsonException("Invalid JSON");
+            }
         }
+        catch (Exception e)
+        {
+            throw new InvalidJsonException(e.getMessage());
+        }
+
 
         return loginRequest;
     }
@@ -111,6 +126,16 @@ private LoggedInUserInfo loggedInUserInfo;
 
             return userId;
         }
+
+        protected void removeUserBySessionId(String sessionId) throws SessionNotFoundException {
+            if (sessionIdToUserMap.containsKey(sessionId)) {
+                sessionIdToUserMap.remove(sessionId);
+            }
+            else {
+                throw new SessionNotFoundException("Session not found");
+            }
+        }
+
 
 
         private void addLoginInfo(String sessionId, LoggedinUser loggedinUser) {

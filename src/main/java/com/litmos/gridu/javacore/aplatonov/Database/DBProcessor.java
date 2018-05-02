@@ -2,6 +2,7 @@ package com.litmos.gridu.javacore.aplatonov.Database;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
 import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
+import com.litmos.gridu.javacore.aplatonov.Models.OrderModel;
 import com.litmos.gridu.javacore.aplatonov.Models.ProductModel;
 import com.litmos.gridu.javacore.aplatonov.Models.RegisterRequestModel;
 
@@ -30,6 +31,17 @@ public class DBProcessor extends DBConnector {
     }
 
 
+    public List<OrderModel> getOrdersListByUserId(String userId) throws SQLException {
+
+        List<OrderModel> orderList = selectStatementHandler(getOrders, "SELECT orderId, userId, orderDate, sum(subtotal) as total, status \n" +
+                "FROM orders\n" +
+                "Where userId = ?\n" +
+                "Group by orderId, userId, orderDate, status\n" +
+                " order by orderDate\n", Integer.valueOf(userId));
+        return orderList;
+    }
+
+
     public void updateProductsTable(List<ItemModel> itemModels) throws IOException, SQLException {
         executeProductsTableUpdate("update products set productQuantity = productQuantity - ? where productId = ?",itemModels);
     }
@@ -38,29 +50,29 @@ public class DBProcessor extends DBConnector {
         try(Connection sqlConnection = getDataBaseConnection()) {
             PreparedStatement statement = sqlConnection.prepareStatement(sql);
             for (ItemModel item : itemList) {
-               statement = addBatchToPreparedStatementsHandler(statement, item.getProductId(),item.getQuantity());
+               statement = addBatchToPreparedStatementsHandler(statement, item.getQuantity(), item.getProductId());
             }
             statement.executeBatch();
             statement.close();
         }
     }
 
-    public void insertOrderIntoOrdersTable(String sql, List<ItemModel> itemList, String orderId, int userId) throws IOException, SQLException {
+    public void insertOrderIntoOrdersTable(String sql, List<ItemModel> itemList, String orderId, int userId, String date) throws IOException, SQLException {
 
         try(Connection sqlConnection = getDataBaseConnection()) {
             PreparedStatement statement = sqlConnection.prepareStatement(sql);
             for (ItemModel item : itemList) {
-                statement = addBatchToPreparedStatementsHandler(statement, orderId, userId, item.getProductId(), item.getQuantity());
+                statement = addBatchToPreparedStatementsHandler(statement, orderId, userId, item.getProductId(), item.getQuantity(), item.getSubtotal(), date);
             }
             statement.executeBatch();
             statement.close();
         }
     }
 
-    public void createOrder(List<ItemModel> itemList, String orderId, String userId) throws IOException, SQLException {
+    public void createOrder(List<ItemModel> itemList, String orderId, String userId, String orderDate) throws IOException, SQLException {
 
-        insertOrderIntoOrdersTable("INSERT INTO `orders` (`orderId`,`userId`,`productId`,`productQuantity`)VALUES(?,?,?,?)",
-                itemList, orderId, Integer.valueOf(userId));
+        insertOrderIntoOrdersTable("INSERT INTO `orders` (`orderId`,`userId`,`productId`,`productQuantity`,`subtotal`,`orderDate`,`status`) VALUES(?,?,?,?,?,?,'Complete')",
+                itemList, orderId, Integer.valueOf(userId), orderDate);
     }
 
 
@@ -95,6 +107,29 @@ public class DBProcessor extends DBConnector {
         return userList;
     }
 
+
+
+    static CheckedFunction<ResultSet,List<OrderModel>> getOrders = resultSet -> {
+        List<OrderModel> ordersList = new ArrayList<>();
+        try {
+            int i = 0;
+            while (resultSet.next()) {
+                i++;
+                String orderIndex = String.valueOf(i);
+                int userId = resultSet.getInt("userId");
+                String orderId = resultSet.getString("orderId");
+                String orderDate = resultSet.getString("orderDate");
+                String total = resultSet.getString("total");
+                String status = resultSet.getString("status");
+                OrderModel orderModel = new OrderModel(orderId,userId,orderIndex,total,orderDate,status);
+                ordersList.add(orderModel);
+            }
+        }
+        catch (SQLException e){
+            throw  e;
+        }
+        return ordersList;
+    };
 
 
 
@@ -145,8 +180,7 @@ public class DBProcessor extends DBConnector {
                 String email = resultSet.getString("userLogin");
                 String password = resultSet.getString("userPassword");
                 int userId = resultSet.getInt("userId");
-                int isBlocked = resultSet.getInt("isBlocked");
-               LoggedinUser loginRequestModel = new LoggedinUser(userId, email, password, isBlocked);
+               LoggedinUser loginRequestModel = new LoggedinUser(userId, email, password);
                registeredUsers.add(loginRequestModel);
             }
         }
@@ -172,22 +206,6 @@ public class DBProcessor extends DBConnector {
             throw e;
         }
         return registeredUsers;
-    };
-
-
-
-    //TODO DELETE AFTER CREATION. It's just an example
-    static Function<ResultSet,List<String>> ProcessUsers  = arg -> {
-        List<String> usersLogins = new ArrayList<>();
-        try {
-            while (arg.next()) {
-                usersLogins.add(arg.getString("userLogin"));
-            }
-        }
-        catch (Exception e){
-            usersLogins =null;
-        }
-        return usersLogins;
     };
 
 }

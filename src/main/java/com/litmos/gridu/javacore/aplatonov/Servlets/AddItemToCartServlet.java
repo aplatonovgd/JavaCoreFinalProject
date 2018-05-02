@@ -1,12 +1,12 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.ModifyCartItemRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.AbstractCartRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.AddItemToCartRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
-import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.ModifyCartItemRequestExcpetionProcessor;
+import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.AddItemToCartRequestExceptionProcessor;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecurePostRequestsValidatorProcessor;
 
 import javax.servlet.ServletConfig;
@@ -17,36 +17,40 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/modifyCartItem")
-public class ModifyCartItem extends HttpServlet {
+
+@WebServlet("/addItemToCart")
+public class AddItemToCartServlet extends HttpServlet {
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         ServletConfig servletConfig = getServletConfig();
         DBProcessor dbProcessor = (DBProcessor) servletConfig.getServletContext().getAttribute("dbConnection");
+
         AbstractCartRequestProcessor.CartInfo cartInfo = (AbstractCartRequestProcessor.CartInfo)
                 servletConfig.getServletContext().getAttribute("cartInfo");
+
         AbstractCartRequestProcessor.ProductInfo productInfo = (AbstractCartRequestProcessor.ProductInfo)
                 servletConfig.getServletContext().getAttribute("productInfo");
+
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = (LoginRequestProcessor.LoggedInUserInfo)
                 servletConfig.getServletContext().getAttribute("loggedInUserInfo");
 
-        ModifyCartItemRequestProcessor modifyCartItemRequestProcessor = new ModifyCartItemRequestProcessor(req, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
+        AddItemToCartRequestProcessor addItemToCartRequestProcessor = new AddItemToCartRequestProcessor(req, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
 
-        ModifyCartItemRequestExcpetionProcessor.processRequest(resp,modifyCartItemRequestProcessor,getServletContext());
 
+        AddItemToCartRequestExceptionProcessor.processRequest(resp,addItemToCartRequestProcessor,getServletContext());
 
     }
-
 
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        getServletContext().log("/modifyCartItem request:");
-        getServletContext().log("Request Method " + req.getMethod());
-        getServletContext().log("Request headers validation started");
+        getServletContext().log("/addItemToCart request:");
+        getServletContext().log("RequestAndOther Method " + req.getMethod());
+        getServletContext().log("RequestAndOther headers validation started");
 
         ServletConfig servletConfig = getServletConfig();
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =

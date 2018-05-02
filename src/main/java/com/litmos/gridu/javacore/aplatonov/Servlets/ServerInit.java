@@ -1,39 +1,22 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.CartSessionTimeChecker;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.CartSessionProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.AbstractCartRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.ProductModel;
 
 import javax.servlet.*;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 
 public class ServerInit implements ServletContextListener{
 
-//private static Logger logger = Logger.getLogger(ServerInit.class);
-
-
-
-
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
 
         ServletContext servletContext = servletContextEvent.getServletContext();
-        servletContext.log("===========SERVER INIT===========");
-        //TODO DELETE;
-        //String hello = (String) servletContext.getInitParameter("email");
-       // servletContext.log(hello);
-        //servletContext.setInitParameter("email","john@wick.com");
-       // hello = (String) servletContext.getInitParameter("email");
-       // servletContext.log(hello);
-       // servletContext.setAttribute("dbConnection","dbconninfo"); // use for test
-        //throw new RuntimeException("test");
-        //getting Server properties
+        servletContext.log("===========Server Initialization===========");
         servletContext.log("Getting DB params from web.xml");
 
         String dbUrl = servletContext.getInitParameter("databaseUrl");
@@ -83,10 +66,10 @@ public class ServerInit implements ServletContextListener{
                 new AbstractCartRequestProcessor.ProductInfo(productModelList);
 
         try {
-            CartSessionTimeChecker cartSessionTimeChecker = new CartSessionTimeChecker(null,dbProcessor,cartInfo,
+            CartSessionProcessor cartSessionProcessor = new CartSessionProcessor(null,dbProcessor,cartInfo,
                     productInfo,loggedInUserInfo, Long.valueOf(sessionExpirationTime),
                     Long.valueOf(sessionExpirationCheckInterval), servletContextEvent.getServletContext());
-            Thread thread = new Thread(cartSessionTimeChecker);
+            Thread thread = new Thread(cartSessionProcessor);
             thread.start();
         } catch (Exception e) {
             servletContext.log("Error" + e.getMessage());
@@ -99,7 +82,7 @@ public class ServerInit implements ServletContextListener{
         servletContext.setAttribute("productInfo", productInfo);
         servletContext.log("Initialized objects added to servletContext");
 
-        servletContext.log("===========INIT SUCCESSFUL===========");
+        servletContext.log("===========Initialized succesfully===========");
 
     }
 

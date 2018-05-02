@@ -1,4 +1,4 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
@@ -27,18 +27,6 @@ public abstract class AbstractCartRequestProcessor extends AbstractPostRequestPr
     }
 
 
-    protected String getUserIdByCookies(Cookie[] cookies) throws SessionNotFoundException {
-        List<Cookie> cookieList = RequestHelper.getCookiesList(cookies);
-
-        if (cookieList == null){
-            throw new SessionNotFoundException("session not found");
-        }
-        String sessionId = RequestHelper.getRequestSessionId(cookieList);
-        String userId = String.valueOf(loggedInUserInfo.getUserIdBySessionId(sessionId));
-
-        return userId;
-    }
-
     public CartModel getCartModel(String userId) throws SessionNotFoundException {
         try {
             return cartInfo.getCartByUserId(userId);
@@ -51,7 +39,7 @@ public abstract class AbstractCartRequestProcessor extends AbstractPostRequestPr
     protected CartModel createCartModel(){
         List<ItemModel> itemModelList = new ArrayList<>();
 
-        return new CartModel(itemModelList,String.valueOf(RequestHelper.getCreationTime()));
+        return new CartModel(itemModelList,String.valueOf(RequestHelper.getCreationTimeMillis()));
     }
 
     protected void  removeCartItemFromCart(CartModel cartModel, String cardItemId) throws ItemNotfoundException, IncorrectQuantityException {
@@ -161,7 +149,7 @@ public abstract class AbstractCartRequestProcessor extends AbstractPostRequestPr
 
                 int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) - Integer.parseInt(quantity);
                 if (ExpectedQuantity < 0){
-                    throw new IncorrectQuantityException("Products quantity can't be lower the zero");
+                    throw new IncorrectQuantityException("Not enough items in the database");
                 }
                 else {
                     String newProductListQuantity = String.valueOf(ExpectedQuantity);

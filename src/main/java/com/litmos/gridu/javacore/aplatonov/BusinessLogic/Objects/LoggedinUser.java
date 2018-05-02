@@ -6,16 +6,14 @@ public class LoggedinUser {
 
     private String userEmail;
     private String userPasswordHash;
-    private int isBlocked;
     private long sessionCreatedTime;
 
 
     /**ONLY FOR DATABASE **/
-    public LoggedinUser(int userId, String userEmail, String userPasswordHash, int isBlocked){
+    public LoggedinUser(int userId, String userEmail, String userPasswordHash){
         this.userId = userId;
         this.userEmail = userEmail;
         this.userPasswordHash = userPasswordHash;
-        this.isBlocked = isBlocked;
     }
 
 
@@ -23,7 +21,7 @@ public class LoggedinUser {
      this.userId = userId;
      this.userEmail = userEmail;
      this.userPasswordHash = userPasswordHash;
-     this.isBlocked = isBlocked;
+     this.sessionCreatedTime = sessionCreatedTime;
     }
 
     public String getUserEmail() {
@@ -42,7 +40,5 @@ public class LoggedinUser {
         return sessionCreatedTime;
     }
 
-    public int getIsBlocked() {
-        return isBlocked;
-    }
+
 }

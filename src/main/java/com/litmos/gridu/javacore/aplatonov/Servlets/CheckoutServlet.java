@@ -1,15 +1,13 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.CheckoutRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.AbstractCartRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.CheckoutRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecureGetRequestValidator;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.CheckoutRequestExcpetionProcessor;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecureGetValidatorResultProcessor;
-import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecurePostRequestsValidatorProcessor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -48,8 +46,8 @@ public class CheckoutServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         getServletContext().log("/checkout request:");
-        getServletContext().log("Request Method " + req.getMethod());
-        getServletContext().log("Request headers validation started");
+        getServletContext().log("RequestAndOther Method " + req.getMethod());
+        getServletContext().log("RequestAndOther headers validation started");
 
         ServletConfig servletConfig = getServletConfig();
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =

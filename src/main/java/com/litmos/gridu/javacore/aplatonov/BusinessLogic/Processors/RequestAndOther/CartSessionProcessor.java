@@ -1,10 +1,7 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectQuantityException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.ItemNotfoundException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
 import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
@@ -18,15 +15,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class CartSessionTimeChecker extends AbstractCartRequestProcessor implements Runnable {
+public class CartSessionProcessor extends AbstractCartRequestProcessor implements Runnable {
 
     private long sessionExpirationTime;
     private long sessionExpirationCheckInterval;
     private ServletContext servletContext;
 
-    public CartSessionTimeChecker(HttpServletRequest request, DBProcessor dbProcessor, CartInfo cartInfo, ProductInfo productInfo,
-                                     LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo,
-                                     long sessionExpirationTime, long sessionExpirationCheckInterval, ServletContext servletContext) throws IOException {
+    public CartSessionProcessor(HttpServletRequest request, DBProcessor dbProcessor, CartInfo cartInfo, ProductInfo productInfo,
+                                LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo,
+                                long sessionExpirationTime, long sessionExpirationCheckInterval, ServletContext servletContext) throws IOException {
         super(request, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
 
         this.sessionExpirationCheckInterval = sessionExpirationCheckInterval;
@@ -49,7 +46,8 @@ public class CartSessionTimeChecker extends AbstractCartRequestProcessor impleme
         {
             ItemModel item = itemModelIterator.next();
             servletContext.log("CSC: Trying to remove productId" + item.getProductId());
-            removeCartItemFromCart(cartModel,item.getCartItemId());
+            productInfo.addProductQuantity(item.getProductId(),item.getQuantity());
+            itemModelIterator.remove();
         }
     }
 
@@ -58,7 +56,6 @@ public class CartSessionTimeChecker extends AbstractCartRequestProcessor impleme
         servletContext.log("Cart session checker(CSC) started ");
 
         while (true){
-            servletContext.log("CSC: ready to check");
             Map<String,CartModel> userIdToCartMap = cartInfo.getUserIdToCartMap();
 
             // check if card session is expired.
@@ -96,7 +93,6 @@ public class CartSessionTimeChecker extends AbstractCartRequestProcessor impleme
             }
 
             try {
-                servletContext.log("CSC: Going to sleep");
                 Thread.sleep(sessionExpirationCheckInterval);
             } catch (InterruptedException e) {
             }

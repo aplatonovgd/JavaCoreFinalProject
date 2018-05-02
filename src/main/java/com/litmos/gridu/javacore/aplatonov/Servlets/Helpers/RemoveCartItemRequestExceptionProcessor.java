@@ -3,7 +3,7 @@ package com.litmos.gridu.javacore.aplatonov.Servlets.Helpers;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectQuantityException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.ItemNotfoundException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.RemoveCartItemRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.RemoveCartItemRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 
 import javax.servlet.ServletContext;
@@ -16,6 +16,7 @@ public class RemoveCartItemRequestExceptionProcessor {
 
     public static void processRequest (HttpServletResponse resp, RemoveCartItemRequestProcessor removeCartItemRequestProcessor, ServletContext servletContext) throws IOException {
 
+        resp.setContentType("application/json");
         try {
             removeCartItemRequestProcessor.processRequest();
         }

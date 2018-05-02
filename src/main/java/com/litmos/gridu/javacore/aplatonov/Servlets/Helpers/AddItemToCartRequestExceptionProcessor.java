@@ -3,9 +3,7 @@ package com.litmos.gridu.javacore.aplatonov.Servlets.Helpers;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectQuantityException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.ItemNotfoundException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AddItemToCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.ModifyCartItemRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.AddItemToCartRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 
 import javax.servlet.ServletContext;
@@ -18,6 +16,7 @@ public class AddItemToCartRequestExceptionProcessor {
 
     public static void processRequest (HttpServletResponse resp, AddItemToCartRequestProcessor addItemToCartRequestProcessor, ServletContext servletContext) throws IOException {
 
+        resp.setContentType("application/json");
         try {
             addItemToCartRequestProcessor.processRequest();//.processRequest();
         }
@@ -47,7 +46,6 @@ public class AddItemToCartRequestExceptionProcessor {
         }
         catch (Exception e){
             servletContext.log("Something went wrong: " + e.getMessage());
-
             StringWriter outError = new StringWriter();
             e.printStackTrace(new PrintWriter(outError));
             servletContext.log(outError.toString());

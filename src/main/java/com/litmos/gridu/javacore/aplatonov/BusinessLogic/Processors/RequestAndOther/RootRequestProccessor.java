@@ -1,4 +1,4 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,6 +24,5 @@ public class RootRequestProccessor {
         RootResponseModel rootResponseModel= new RootResponseModel(productInfo.getProductModelList());
         return gson.toJson(rootResponseModel);
     }
-
 
 }

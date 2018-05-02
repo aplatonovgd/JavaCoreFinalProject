@@ -1,6 +1,7 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.AddItemToCartRequestModel;
@@ -26,7 +27,7 @@ public class AddItemToCartRequestProcessor extends AbstractCartRequestProcessor 
         //checkItemQuantity(addItemToCartRequestModel.getQuantity(), itemModel.getQuantity());
         itemModel.setQuantity(addItemToCartRequestModel.getQuantity());
 
-        String userId = getUserIdByCookies(request.getCookies());
+        String userId = RequestHelper.getUserIdByCookies(request.getCookies(),loggedInUserInfo);
 
 
         CartModel cartModel = getCartModel(userId);
@@ -37,23 +38,14 @@ public class AddItemToCartRequestProcessor extends AbstractCartRequestProcessor 
 
     protected void addItemToCart(ItemModel itemModel, String userId, CartModel cartModel) throws ItemNotfoundException, IncorrectQuantityException {
 
-        cartModel.addItem(itemModel);
-        cartInfo.addToCartInfo(userId,cartModel);
-        productInfo.withdrawProductQuantity(itemModel.getProductId(),itemModel.getQuantity());
-    }
-
-
-
-//TODO DELETE
-  /*  protected void checkItemQuantity(String requestedQuantity, String actualQuantity) throws IncorrectQuantityException {
-
-        int reqQuantity = Integer.parseInt(requestedQuantity);
-        int actQuantity = Integer.parseInt(actualQuantity);
-
-        if (actQuantity < reqQuantity){
-            throw new IncorrectQuantityException("Request has incorrect quantity");
+        if (Integer.valueOf(itemModel.getQuantity()) <= 0){
+            throw new IncorrectQuantityException("Quantity should be bigger than zero");
         }
-    }*/
+        productInfo.withdrawProductQuantity(itemModel.getProductId(),itemModel.getQuantity());
+        cartModel.addItem(itemModel);
+        cartModel.updateCartCreatedTime(String.valueOf(RequestHelper.getCreationTimeMillis()));
+        cartInfo.addToCartInfo(userId,cartModel);
+    }
 
 
     protected ItemModel getItemFromDatabse(int productId) throws SQLException, ItemNotfoundException {
@@ -67,10 +59,15 @@ public class AddItemToCartRequestProcessor extends AbstractCartRequestProcessor 
 
     @Override
     protected AddItemToCartRequestModel parseJson(String json) throws InvalidJsonException {
-        AddItemToCartRequestModel addItemToCartRequestModel =  gson.fromJson(json, AddItemToCartRequestModel.class);
-
-        if (addItemToCartRequestModel == null ||  addItemToCartRequestModel.getId() == null || addItemToCartRequestModel.getQuantity() == null){
-            throw new InvalidJsonException("Invalid JSON");
+        AddItemToCartRequestModel addItemToCartRequestModel;
+        try{
+            addItemToCartRequestModel =  gson.fromJson(json, AddItemToCartRequestModel.class);
+            if (addItemToCartRequestModel == null ||  addItemToCartRequestModel.getId() == null || addItemToCartRequestModel.getQuantity() == null){
+                throw new InvalidJsonException("Invalid JSON");
+            }
+        }
+        catch (Exception e){
+            throw new InvalidJsonException(e.getMessage());
         }
 
         return addItemToCartRequestModel;

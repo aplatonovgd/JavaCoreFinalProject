@@ -3,7 +3,7 @@ package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 import javax.servlet.ServletContext;
@@ -27,7 +27,6 @@ public abstract class AbstractSecureRequestValidator extends AbstractRequestVali
         }
         this.isUnauthorizedRequestExpected = isUnauthorizedRequestExpected;
         this.servletContext = servletContext;
-
     }
 
 
@@ -37,13 +36,19 @@ public abstract class AbstractSecureRequestValidator extends AbstractRequestVali
 
         validationResultModel = getHttpHeadersValidationResult(request);
 
+        if (validationResultModel.isSuccess()){
+            servletContext.log("Servlet request method is correct. Go to Content-Type validation");
+            validationResultModel = checkRequestContentType(request);
+        }
+
         if (validationResultModel.isSuccess()) {
-            servletContext.log("Servlet request method is correct. Go go to cookies validation");
-          return getCookiesValidationResult();
+            servletContext.log("Servlet Content-Type is correct. Go to cookies validation");
+            return validationResultModel= getCookiesValidationResult();
         }
 
         return validationResultModel;
     }
+
 
 
     protected ValidationResult getCookiesValidationResult(){
@@ -89,37 +94,6 @@ public abstract class AbstractSecureRequestValidator extends AbstractRequestVali
         findUserInLoggedInUserInfo(sessionId,passHash);
     }
 
-
-    //TODO REMOVE
-   /* protected String getRequestSessionId() throws SessionNotFoundException {
-
-        if(cookies == null) {
-            throw new SessionNotFoundException("SessionId not found in cookies list");
-        }
-        Optional<Cookie> sessionCookie = cookies.stream()
-                .filter(x -> x.getName().equals("sessionId"))
-                .findFirst();
-        if(!sessionCookie.isPresent()){
-            throw new SessionNotFoundException("SessionId not found in cookies list");
-        }
-
-        return sessionCookie.get().getValue();
-    }
-
-    protected String getRequestPasswordHash() throws SessionNotFoundException {
-
-        if(cookies == null) {
-            throw new SessionNotFoundException("SessionId not found in cookies list");
-        }
-
-        Optional<Cookie> passHashCookie = cookies.stream()
-                .filter(x -> x.getName().equals("ph"))
-                .findFirst();
-        if(!passHashCookie.isPresent()){
-            throw new SessionNotFoundException("PasswordHash not found in cookies list");
-        }
-        return passHashCookie.get().getValue();
-    }*/
 
     protected void findUserInLoggedInUserInfo (String sessionId, String passHash) throws SessionNotFoundException {
 

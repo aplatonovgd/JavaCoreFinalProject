@@ -1,6 +1,7 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
@@ -18,7 +19,7 @@ public class DisplayCartRequestProcessor extends AbstractCartRequestProcessor {
     public String processRequest() throws SessionNotFoundException {
         String jsonBody;
 
-        String userId = getUserIdByCookies(request.getCookies());
+        String userId = RequestHelper.getUserIdByCookies(request.getCookies(),loggedInUserInfo);
 
         CartModel cartModel;
         try {

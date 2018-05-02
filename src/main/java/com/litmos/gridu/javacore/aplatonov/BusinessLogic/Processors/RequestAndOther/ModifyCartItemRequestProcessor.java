@@ -1,9 +1,10 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectQuantityException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.ItemNotfoundException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
 import com.litmos.gridu.javacore.aplatonov.Models.ModifyCartItemRequestModel;
@@ -21,7 +22,7 @@ public class ModifyCartItemRequestProcessor extends AbstractCartRequestProcessor
     public void processRequest() throws InvalidJsonException, SessionNotFoundException, IncorrectQuantityException, ItemNotfoundException {
         ModifyCartItemRequestModel modifyCartItemRequestModel = parseJson(requestBody);
 
-        String userId = getUserIdByCookies(request.getCookies());
+        String userId = RequestHelper.getUserIdByCookies(request.getCookies(),loggedInUserInfo);
 
         CartModel cartModel = getCartModel(userId);
 
@@ -34,8 +35,8 @@ public class ModifyCartItemRequestProcessor extends AbstractCartRequestProcessor
         int currentCartItemQuantity = Integer.valueOf(cartModel.getCartItemQuantity(cartItemId));
         int expectedQuantity = Integer.valueOf(quantity);
 
-        if(quantity.equals("0")) {
-            throw new IncorrectQuantityException("Quantity can't be zero");
+        if(Integer.valueOf(quantity) <= 0) {
+            throw new IncorrectQuantityException("Quantity should be bigger than zero");
         }
 
         String productId = cartModel.getProductIdByCartItemId(cartItemId);
@@ -43,24 +44,31 @@ public class ModifyCartItemRequestProcessor extends AbstractCartRequestProcessor
         if(currentCartItemQuantity < expectedQuantity ){
 
             /* WITHDRAW FROM PRODUCTS CACHE. NOT FROM THE CART*/
-            productInfo.withdrawProductQuantity(productId,String.valueOf(currentCartItemQuantity - expectedQuantity));
+            productInfo.withdrawProductQuantity(productId,String.valueOf(expectedQuantity- currentCartItemQuantity));
         }
         else if (currentCartItemQuantity > expectedQuantity){
 
             /* ADD TO PRODUCTS CACHE. NOT TO THE CART*/
-            productInfo.addProductQuantity(productId,String.valueOf(expectedQuantity - currentCartItemQuantity));
+            productInfo.addProductQuantity(productId,String.valueOf(currentCartItemQuantity - expectedQuantity));
         }
 
         cartModel.changeCartItemQuantityById(cartItemId, quantity);
+        cartModel.updateCartCreatedTime(String.valueOf(RequestHelper.getCreationTimeMillis()));
     }
-
 
     @Override
     protected ModifyCartItemRequestModel parseJson(String json) throws InvalidJsonException {
-        ModifyCartItemRequestModel modifyCartItemRequestModel =  gson.fromJson(json, ModifyCartItemRequestModel.class);
+        ModifyCartItemRequestModel modifyCartItemRequestModel;
 
-        if (modifyCartItemRequestModel == null ||  modifyCartItemRequestModel.getId() == null || modifyCartItemRequestModel.getQuantity() == null){
-            throw new InvalidJsonException("Invalid JSON");
+        try{
+            modifyCartItemRequestModel =  gson.fromJson(json, ModifyCartItemRequestModel.class);
+
+            if (modifyCartItemRequestModel == null ||  modifyCartItemRequestModel.getId() == null || modifyCartItemRequestModel.getQuantity() == null){
+                throw new InvalidJsonException("Invalid JSON");
+            }
+        }
+        catch (Exception e){
+            throw new InvalidJsonException(e.getMessage());
         }
 
         return modifyCartItemRequestModel;

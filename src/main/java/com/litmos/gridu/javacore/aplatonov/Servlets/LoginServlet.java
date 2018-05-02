@@ -1,9 +1,10 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidCredentialsException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.LoginResponseProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
@@ -47,8 +48,16 @@ public class LoginServlet extends HttpServlet {
         }
         catch (IncorrectNameOrPasswordException e){
             getServletContext().log("Incorrect email or password : " + e.getMessage());
-           // getServletContext().log(e.getStackTrace().toString()); // TODO <-- CHECK
 
+            resp.setStatus(401);
+            resp.addHeader("WWW-Authenticate", "Basic");
+            ErrorResponseProcessor errorResponseProcessor =
+                    new ErrorResponseProcessor("Incorrect credentials",
+                            "Incorrect email or password");
+            resp.getWriter().write(errorResponseProcessor.getResponseBody());
+        }
+        catch (InvalidCredentialsException e){
+            getServletContext().log("Invalid Credentials:" + e.getMessage());
             resp.setStatus(401);
             resp.addHeader("WWW-Authenticate", "Basic");
             ErrorResponseProcessor errorResponseProcessor =
@@ -58,15 +67,11 @@ public class LoginServlet extends HttpServlet {
         }
         catch (Exception e ){
             getServletContext().log("Something went wrong: " + e.getMessage());
-            //getServletContext().log(e.getStackTrace().toString()); // TODO <-- CHECK
-
             resp.setStatus(500);
             ErrorResponseProcessor errorResponseProcessor =
                     new ErrorResponseProcessor("Something went wrong",
                             "Something went wrong. Try again");
             resp.getWriter().write(errorResponseProcessor.getResponseBody());
-            //TODO REMOVE. DEBUG ONLY
-             //resp.getWriter().write(e.getMessage());
         }
 
     }
@@ -76,8 +81,8 @@ public class LoginServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         getServletContext().log("Login request:");
-        getServletContext().log("Request Method " + req.getMethod());
-        getServletContext().log("Request headers validation started");
+        getServletContext().log("RequestAndOther Method " + req.getMethod());
+        getServletContext().log("RequestAndOther headers validation started");
 
         ServletConfig servletConfig = getServletConfig();
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =
@@ -104,7 +109,6 @@ public class LoginServlet extends HttpServlet {
         Cookie userSessionCookie = new Cookie("sessionId", sessionId);
         resp.addCookie(passwordHashCookie);
         resp.addCookie(userSessionCookie);
-
     }
 
 

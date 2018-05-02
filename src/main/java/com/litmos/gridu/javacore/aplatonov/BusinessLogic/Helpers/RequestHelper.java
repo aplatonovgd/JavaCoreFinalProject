@@ -1,11 +1,13 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 
 import javax.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class RequestHelper {
@@ -24,10 +26,31 @@ public class RequestHelper {
         return uuid.toString();
     }
 
-    public static long getCreationTime(){
+    public static long getCreationTimeMillis(){
 
         return System.currentTimeMillis();
     }
+
+    public static String getCurrentDateTimeSimpleFormat(){
+        java.util.Date date = new java.util.Date();
+        java.text.SimpleDateFormat simpleDateFormat =
+                new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return simpleDateFormat.format(date);
+    }
+
+
+    public static String getUserIdByCookies(Cookie[] cookies, LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo) throws SessionNotFoundException {
+        List<Cookie> cookieList = RequestHelper.getCookiesList(cookies);
+
+        if (cookieList == null){
+            throw new SessionNotFoundException("session not found");
+        }
+        String sessionId = RequestHelper.getRequestSessionId(cookieList);
+        String userId = String.valueOf(loggedInUserInfo.getUserIdBySessionId(sessionId));
+
+        return userId;
+    }
+
 
     public static List<Cookie> getCookiesList(Cookie [] cookies){
         List<Cookie> cookieList = Arrays.asList(cookies);

@@ -1,52 +1,55 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.AbstractCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.DisplayCartRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Request.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LogoutRequestProccessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecureGetRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecureGetValidatorResultProcessor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/displayCart")
-public class DisplayCart extends HttpServlet {
+@WebServlet("/logout")
+public class LogoutServlet extends HttpServlet {
+
+
+    public void resetCookies(HttpServletRequest req, HttpServletResponse resp){
+
+        if(req.getCookies().length>0) {
+            for (Cookie cookie : req.getCookies()) {
+                cookie.setValue("");
+                cookie.setMaxAge(0);
+                resp.addCookie(cookie);
+            }
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         ServletConfig servletConfig = getServletConfig();
         DBProcessor dbProcessor = (DBProcessor) servletConfig.getServletContext().getAttribute("dbConnection");
-
-        AbstractCartRequestProcessor.CartInfo cartInfo = (AbstractCartRequestProcessor.CartInfo)
-                servletConfig.getServletContext().getAttribute("cartInfo");
-
-        AbstractCartRequestProcessor.ProductInfo productInfo = (AbstractCartRequestProcessor.ProductInfo)
-                servletConfig.getServletContext().getAttribute("productInfo");
-
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = (LoginRequestProcessor.LoggedInUserInfo)
                 servletConfig.getServletContext().getAttribute("loggedInUserInfo");
 
 
-        DisplayCartRequestProcessor displayCartRequestProcessor = new DisplayCartRequestProcessor(req, dbProcessor, cartInfo, productInfo, loggedInUserInfo);
+        LogoutRequestProccessor logoutRequestProccessor = new LogoutRequestProccessor(req, dbProcessor, loggedInUserInfo);
 
         String responseBody;
-
         try {
-            responseBody = displayCartRequestProcessor.processRequest();
-            resp.getWriter().write(responseBody);
+            logoutRequestProccessor.processRequest();
+            resetCookies(req, resp);
         }
         catch (Exception e){
             getServletContext().log("Something went wrong: " + e.getMessage());
-
             resp.setStatus(500);
             ErrorResponseProcessor errorResponseProcessor =
                     new ErrorResponseProcessor("Something went wrong",
@@ -57,9 +60,9 @@ public class DisplayCart extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        getServletContext().log("/displayCart request:");
-        getServletContext().log("Request Method " + req.getMethod());
-        getServletContext().log("Request headers validation started");
+        getServletContext().log("Root request:");
+        getServletContext().log("RequestAndOther Method " + req.getMethod());
+        getServletContext().log("RequestAndOther headers validation started");
 
         ServletConfig servletConfig = getServletConfig();
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo =
@@ -75,5 +78,7 @@ public class DisplayCart extends HttpServlet {
             doGet(req,resp);
         }
     }
+
+
 
 }
