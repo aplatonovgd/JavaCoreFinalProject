@@ -12,9 +12,9 @@ Property of https://griddynamics.com
 
 ### Supported Rest methods
 
-#### Security
+#### Security operations
 
-NB: Make sure that cookies that your client supports cookies.
+Make sure that your client supports cookies.
 
 1. **/register - register user  (POST)**
 Example request:
@@ -63,5 +63,7 @@ id - id of the item in the cart
 6. **sessionExpirationTime in ms- defines how long user should be inactive until his cart expires**
 7. **sessionExpirationCheckInterval in ms - sleep timeout for a thread that checks expired carts**
 
-##### How to test it
-javaCore.postman_collection.json - property for Postman to start with this project.
+##### How to test
+
+1. Start Postman
+2. Import file "javaCore.postman_collection.json"
