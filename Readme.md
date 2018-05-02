@@ -5,7 +5,7 @@ Created as final task for my java core course.
 
 Property of https://griddynamics.com
 
-## Requirments
+## Requirements
 - MySQL server
 - Apache Tomcat
 - Maven
@@ -60,7 +60,7 @@ id - id of the item in the cart
 3. **databaseLogin - database login**
 4. **databasePassword -database password**
 5. **hashPasswords - if true server will hash password**
-6. **sessionExpirationTime in ms- defines how long user should be incactive until his cart expires**
+6. **sessionExpirationTime in ms- defines how long user should be inactive until his cart expires**
 7. **sessionExpirationCheckInterval in ms - sleep timeout for a thread that checks expired carts**
 
 ##### How to test it
