@@ -3,7 +3,7 @@
 Simple and not tread safe REST API shop service.
 Created as final task for my java core course.
 
-Property of [https://griddynamics.com]griddynamics.com
+Property of https://griddynamics.com
 
 ## Requirments
 - MySQL server
