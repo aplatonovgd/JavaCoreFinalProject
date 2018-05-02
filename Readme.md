@@ -20,11 +20,11 @@ Make sure that your client supports cookies.
 ```
 {"email":"test@test.com", "password":"123456"}
 ```
-2. **/login  - login (POST)**<br/> Example request:
+2. **/login  - login (POST)** Example request:
 ```
 {"email":"test@test.com", "password":"123456"}
 ```
-3. **/logout - logout (GET)**<br/>
+3. **/logout - logout (GET)**
 
 #### Shop operations
 1. **/  - get all products (GET)**
