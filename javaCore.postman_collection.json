@@ -37,7 +37,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"email\":\"12345@alesha.com\", \"password\":\"123\"}"
+					"raw": "{\"email\":\"12345@test.com\", \"password\":\"123\"}"
 				},
 				"url": {
 					"raw": "localhost:8080/javaCore/login",
@@ -65,7 +65,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"email\":\"12345@alesha.com\", \"password\":\"123\"}"
+					"raw": "{\"email\":\"12345@test.com\", \"password\":\"123\"}"
 				},
 				"url": {
 					"raw": "localhost:8080/javaCore/register",

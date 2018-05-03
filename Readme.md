@@ -58,7 +58,20 @@ id - id of the item in the cart
 6. **sessionExpirationTime (in ms) - defines how long user should be inactive until his cart expires**
 7. **sessionExpirationCheckInterval (in ms) - sleep timeout for a thread that checks expired carts**
 
+#### Installation and Deployment guide
+
+1. Make sure that you have Maven, Tomcat and MySql installed.
+2. Make sure that Tomcat and MySql services started.
+3. Pull the project and wait for maven to download all dependencies
+4. Open pom.xml and change connection properties in tomcat7-maven-plugin (make sure that you have a tomcat admin account)
+4.1 (Optional) Put "mysql-connector-java.jar" file to your "(Tomcat)\Lib" folder
+5. Open "src\main\webapp\WEB-INF\web.xml" file and specify your MySQL database connection parameters.
+6. Use command "tomcat7: deploy" to deploy the project
+7. Use command "tomcat7: redeploy" to redeploy the project
+
+
 #### How to test
+For acceptance testing I recommend using Postman. There is a settings file with all requests - 'javaCore.postman_collection.json'.
 
 1. Start Postman
-2. Import file "javaCore.postman_collection.json"
+2. Import file "javaCore.postman_collection.json" from the root project's folder.
