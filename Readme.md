@@ -72,9 +72,9 @@ id - id of the item in the cart
 
 #### Troubleshooting
 
-- If the application doesn't start, make sure that your specified all settings correctly
 - Note! Only MySql is supported.
-- The application uses servlet logging. The log file is in "Tomcat\logs" folder. (filename - localhost.YYYY-MM-DD)
+- If the application doesn't start, make sure that you correctly specified all the settings
+- The application uses servlet logging. The log file is in "(Tomcat)\logs" folder. (filename - localhost.YYYY-MM-DD)
 
 #### How to test
 For acceptance testing I recommend using Postman. There is a settings file with all requests - 'javaCore.postman_collection.json'.
