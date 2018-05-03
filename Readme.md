@@ -59,7 +59,7 @@ id - id of the item in the cart
 6. **sessionExpirationTime (in ms) - defines how long user should be inactive until his cart expires**
 7. **sessionExpirationCheckInterval (in ms) - sleep timeout for a thread that checks expired carts**
 
-#### Installation and Deployment guide
+#### Installation and deployment guide
 
 1. Make sure that you have Maven, Tomcat and MySql installed.
 2. Make sure that Tomcat and MySql services started.
