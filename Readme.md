@@ -49,6 +49,7 @@ id - id of the item in the cart
 6. **/checkout - checkout cart (GET)**
 7. **/displayOrders - display your orders (GET)**
 
+
 #### Web.xml params
 1. **databaseUrl - database url**
 2. **databaseName - database name**
@@ -69,6 +70,11 @@ id - id of the item in the cart
 6. Use command "tomcat7: deploy" to deploy the project
 7. Use command "tomcat7: redeploy" to redeploy the project
 
+#### Troubleshooting
+
+- If the application doesn't start, make sure that your specified all settings correctly
+- Note! Only MySql is supported.
+- The application uses servlet logging. The log file is in "Tomcat\logs" folder. (filename - localhost.YYYY-MM-DD)
 
 #### How to test
 For acceptance testing I recommend using Postman. There is a settings file with all requests - 'javaCore.postman_collection.json'.
