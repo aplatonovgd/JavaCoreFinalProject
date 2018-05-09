@@ -15,96 +15,113 @@ import java.util.function.Function;
 public class DBProcessor extends DBConnector {
 
     boolean isDbExist= false;
-
+    private final Object dbProcessorKey = new Object();
 
     public DBProcessor(String dbUrl, String dbName, String username, String dbPassword, String dbCreateScript, String addTableDataScript) throws IOException, SQLException {
-        initDBConnector(dbUrl, dbName, username, dbPassword);
-        try (Connection connection = getDataBaseConnection()) {}
-        catch (SQLException e) {
-            //MySQL only
-            if (e.getSQLState().equalsIgnoreCase("42000")) {
-                executeBatchStatementOnServer(dbCreateScript);
-                executeBatchStatementOnServer(addTableDataScript);
-             }
-             else throw new SQLException(e);
+        synchronized (dbProcessorKey) {
+            initDBConnector(dbUrl, dbName, username, dbPassword);
+            try (Connection connection = getDataBaseConnection()) {
+            } catch (SQLException e) {
+                //MySQL only
+                if (e.getSQLState().equalsIgnoreCase("42000")) {
+                    executeBatchStatementOnServer(dbCreateScript);
+                    executeBatchStatementOnServer(addTableDataScript);
+                } else throw new SQLException(e);
+            }
         }
     }
 
 
     public List<OrderModel> getOrdersListByUserId(String userId) throws SQLException {
-
-        List<OrderModel> orderList = selectStatementHandler(getOrders, "SELECT orderId, userId, orderDate, sum(subtotal) as total, status \n" +
-                "FROM orders\n" +
-                "Where userId = ?\n" +
-                "Group by orderId, userId, orderDate, status\n" +
-                " order by orderDate\n", Integer.valueOf(userId));
-        return orderList;
+        synchronized (dbProcessorKey) {
+            List<OrderModel> orderList = selectStatementHandler(getOrders, "SELECT orderId, userId, orderDate, sum(subtotal) as total, status \n" +
+                    "FROM orders\n" +
+                    "Where userId = ?\n" +
+                    "Group by orderId, userId, orderDate, status\n" +
+                    " order by orderDate\n", Integer.valueOf(userId));
+            return orderList;
+        }
     }
 
 
     public void updateProductsTable(List<ItemModel> itemModels) throws IOException, SQLException {
-        executeProductsTableUpdate("update products set productQuantity = productQuantity - ? where productId = ?",itemModels);
+        synchronized (dbProcessorKey) {
+            executeProductsTableUpdate("update products set productQuantity = productQuantity - ? where productId = ?", itemModels);
+        }
     }
 
     public void executeProductsTableUpdate(String sql, List<ItemModel> itemList) throws IOException, SQLException {
-        try(Connection sqlConnection = getDataBaseConnection()) {
-            PreparedStatement statement = sqlConnection.prepareStatement(sql);
-            for (ItemModel item : itemList) {
-               statement = addBatchToPreparedStatementsHandler(statement, item.getQuantity(), item.getProductId());
+        synchronized (dbProcessorKey) {
+            try (Connection sqlConnection = getDataBaseConnection()) {
+                PreparedStatement statement = sqlConnection.prepareStatement(sql);
+                for (ItemModel item : itemList) {
+                    statement = addBatchToPreparedStatementsHandler(statement, item.getQuantity(), item.getProductId());
+                }
+                statement.executeBatch();
+                statement.close();
             }
-            statement.executeBatch();
-            statement.close();
         }
     }
 
     public void insertOrderIntoOrdersTable(String sql, List<ItemModel> itemList, String orderId, int userId, String date) throws IOException, SQLException {
-
-        try(Connection sqlConnection = getDataBaseConnection()) {
-            PreparedStatement statement = sqlConnection.prepareStatement(sql);
-            for (ItemModel item : itemList) {
-                statement = addBatchToPreparedStatementsHandler(statement, orderId, userId, item.getProductId(), item.getQuantity(), item.getSubtotal(), date);
+        synchronized (dbProcessorKey) {
+            try (Connection sqlConnection = getDataBaseConnection()) {
+                PreparedStatement statement = sqlConnection.prepareStatement(sql);
+                for (ItemModel item : itemList) {
+                    statement = addBatchToPreparedStatementsHandler(statement, orderId, userId, item.getProductId(), item.getQuantity(), item.getSubtotal(), date);
+                }
+                statement.executeBatch();
+                statement.close();
             }
-            statement.executeBatch();
-            statement.close();
         }
     }
 
     public void createOrder(List<ItemModel> itemList, String orderId, String userId, String orderDate) throws IOException, SQLException {
-
-        insertOrderIntoOrdersTable("INSERT INTO `orders` (`orderId`,`userId`,`productId`,`productQuantity`,`subtotal`,`orderDate`,`status`) VALUES(?,?,?,?,?,?,'Complete')",
-                itemList, orderId, Integer.valueOf(userId), orderDate);
+        synchronized (dbProcessorKey) {
+            insertOrderIntoOrdersTable("INSERT INTO `orders` (`orderId`,`userId`,`productId`,`productQuantity`,`subtotal`,`orderDate`,`status`) VALUES(?,?,?,?,?,?,'Complete')",
+                    itemList, orderId, Integer.valueOf(userId), orderDate);
+        }
     }
 
 
     public List<ItemModel> getItemListFromDatabseById(int productId) throws SQLException {
-        List<ItemModel> itemModelList = selectStatementHandler(getItem, "select * from products where productId = ?", productId);
-        return itemModelList;
+        synchronized (dbProcessorKey) {
+            List<ItemModel> itemModelList = selectStatementHandler(getItem, "select * from products where productId = ?", productId);
+            return itemModelList;
+        }
     }
 
 
     public void addUserToDB(RegisterRequestModel registerRequestModel) throws SQLException {
-
-        insertAndUpdateStatementsHandler("INSERT INTO `users` (`userLogin`, `userPassword`, `isBlocked`) VALUES (?,?,?)",
-                registerRequestModel.getEmail(), registerRequestModel.getPassword(),0);
+        synchronized (dbProcessorKey) {
+            insertAndUpdateStatementsHandler("INSERT INTO `users` (`userLogin`, `userPassword`, `isBlocked`) VALUES (?,?,?)",
+                    registerRequestModel.getEmail(), registerRequestModel.getPassword(), 0);
+        }
     }
 
 
     public List<ProductModel> getProducts() throws SQLException {
-         List<ProductModel> productModels;
-         productModels = selectStatementHandler(getProducts,"select * from products");
-         return productModels;
+        synchronized (dbProcessorKey) {
+            List<ProductModel> productModels;
+            productModels = selectStatementHandler(getProducts, "select * from products");
+            return productModels;
+        }
     }
 
     public List<LoggedinUser> getLoginRequestModelListByLogin(String email) throws SQLException, IllegalArgumentException {
-        List<LoggedinUser> userList;
-        userList = selectStatementHandler(getLoginUserModel,"select * from users where userLogin = ?", email);
-        return userList;
+        synchronized (dbProcessorKey) {
+            List<LoggedinUser> userList;
+            userList = selectStatementHandler(getLoginUserModel, "select * from users where userLogin = ?", email);
+            return userList;
+        }
     }
 
     public List<RegisterRequestModel> getRegisterRequestModelListByLogin(String email) throws SQLException, IllegalArgumentException {
-        List<RegisterRequestModel> userList;
-        userList = selectStatementHandler(getRegisteredUsersModel,"select * from users where userLogin = ?", email);
-        return userList;
+        synchronized (dbProcessorKey) {
+            List<RegisterRequestModel> userList;
+            userList = selectStatementHandler(getRegisteredUsersModel, "select * from users where userLogin = ?", email);
+            return userList;
+        }
     }
 
 
