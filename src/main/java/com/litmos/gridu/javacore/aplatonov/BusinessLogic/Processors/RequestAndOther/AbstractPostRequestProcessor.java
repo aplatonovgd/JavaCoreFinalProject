@@ -3,9 +3,9 @@ package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndO
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidEmailException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidPasswordException;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,13 +34,13 @@ public abstract class AbstractPostRequestProcessor {
 
     public void checkUserEmail(String email) throws InvalidEmailException {
         if(!email.contains("@") || !(email.contains("."))){
-            throw new InvalidEmailException("Incorrect email address");
+            throw new InvalidEmailException("Invalid email address");
         }
     }
 
-    public void checkUserPassword(String password) throws InvalidPasswordException {
+    public void checkUserPassword(String password) throws IncorrectNameOrPasswordException {
        if(password.length() <= 0) {
-            throw new InvalidPasswordException("Your password is invalid");
+            throw new IncorrectNameOrPasswordException("Incorrect email or password");
         }
 
     }

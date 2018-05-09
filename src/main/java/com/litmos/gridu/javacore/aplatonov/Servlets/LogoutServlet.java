@@ -33,15 +33,15 @@ public class LogoutServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         ServletConfig servletConfig = getServletConfig();
         DBProcessor dbProcessor = (DBProcessor) servletConfig.getServletContext().getAttribute("dbConnection");
         LoginRequestProcessor.LoggedInUserInfo loggedInUserInfo = (LoginRequestProcessor.LoggedInUserInfo)
                 servletConfig.getServletContext().getAttribute("loggedInUserInfo");
+        boolean hashPasswords = (boolean) servletConfig.getServletContext().getAttribute("hashPasswords");
 
-
-        LogoutRequestProccessor logoutRequestProccessor = new LogoutRequestProccessor(req, dbProcessor, loggedInUserInfo);
+        LogoutRequestProccessor logoutRequestProccessor = new LogoutRequestProccessor(req, dbProcessor, hashPasswords, loggedInUserInfo);
 
         String responseBody;
         try {

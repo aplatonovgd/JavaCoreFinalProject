@@ -12,8 +12,8 @@ import java.util.List;
 public class LogoutRequestProccessor extends LoginRequestProcessor {
 
 
-    public LogoutRequestProccessor(HttpServletRequest request, DBProcessor dbProcessor, LoggedInUserInfo loggedInUserInfo) throws IOException {
-        super(request, dbProcessor, loggedInUserInfo);
+    public LogoutRequestProccessor(HttpServletRequest request, DBProcessor dbProcessor, boolean hashPassword, LoggedInUserInfo loggedInUserInfo) throws IOException {
+        super(request, dbProcessor, hashPassword, loggedInUserInfo);
     }
 
     @Override
@@ -21,7 +21,6 @@ public class LogoutRequestProccessor extends LoginRequestProcessor {
         List<Cookie> coookieList = RequestHelper.getCookiesList(request.getCookies());
         String sessionId =RequestHelper.getRequestSessionId(coookieList);
         loggedInUserInfo.removeUserBySessionId(sessionId);
-
         return "";
     }
 }

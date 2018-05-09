@@ -1,6 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidCredentialsException;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidEmailException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
@@ -56,7 +56,7 @@ public class LoginServlet extends HttpServlet {
                             "Incorrect email or password");
             resp.getWriter().write(errorResponseProcessor.getResponseBody());
         }
-        catch (InvalidCredentialsException e){
+        catch (InvalidEmailException e){
             getServletContext().log("Invalid Credentials:" + e.getMessage());
             resp.setStatus(401);
             resp.addHeader("WWW-Authenticate", "Basic");

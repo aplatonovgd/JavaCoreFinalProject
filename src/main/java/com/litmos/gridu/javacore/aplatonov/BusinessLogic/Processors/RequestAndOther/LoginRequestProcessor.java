@@ -18,13 +18,6 @@ private boolean hashPassword;
 
 protected LoggedInUserInfo loggedInUserInfo;
 
-
-    /*ONLY FOR LOGOUT PURPOSE*/
-    public LoginRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor, LoggedInUserInfo loggedInUserInfo) throws IOException {
-        super(request, dbProcessor);
-        this.loggedInUserInfo = loggedInUserInfo;
-    }
-
     public LoginRequestProcessor(HttpServletRequest request, DBProcessor dbProcessor, boolean hashPassword, LoggedInUserInfo loggedInUserInfo) throws IOException {
         super(request, dbProcessor);
         this.hashPassword = hashPassword;
@@ -32,7 +25,7 @@ protected LoggedInUserInfo loggedInUserInfo;
     }
 
 
-    public String processRequest() throws SQLException, InvalidJsonException, IncorrectNameOrPasswordException, NoSuchAlgorithmException, InvalidEmailException, InvalidPasswordException, SessionNotFoundException {
+    public String processRequest() throws SQLException, InvalidJsonException, IncorrectNameOrPasswordException, NoSuchAlgorithmException, InvalidEmailException, SessionNotFoundException {
 
         LoginRequestModel loginRequest = parseJson(requestBody);
         checkUserEmail(loginRequest.getEmail());
@@ -46,27 +39,28 @@ protected LoggedInUserInfo loggedInUserInfo;
         String sessionId = RequestHelper.generateSessionId();
         long sessionCreatedTime = RequestHelper.getCreationTimeMillis();
 
-        LoggedinUser loggedinUser = new LoggedinUser(databaseUser.get().getUserId(),databaseUser.get().getUserEmail(),databaseUser.get().getUserPasswordHash(),sessionCreatedTime);
+        LoggedinUser loggedinUser = new LoggedinUser(databaseUser.get().getUserId(), databaseUser.get().getUserEmail(),
+                databaseUser.get().getUserPasswordHash(), sessionCreatedTime);
+
         loggedInUserInfo.addLoginInfo(sessionId, loggedinUser);
 
         return sessionId;
     }
 
 
-    private void checkPassword(boolean hashPassword, String loginRrequestPassword, String databasePassword) throws NoSuchAlgorithmException, IncorrectNameOrPasswordException {
+    private void checkPassword(boolean hashPassword, String loginRequestPassword, String databasePassword) throws NoSuchAlgorithmException, IncorrectNameOrPasswordException {
 
         if (hashPassword) {
-            String cleanPass = loginRrequestPassword;
-            loginRrequestPassword = RequestHelper.calculatePasswordHash(cleanPass);
+            String cleanPass = loginRequestPassword;
+            loginRequestPassword = RequestHelper.calculatePasswordHash(cleanPass);
         }
 
-        if (!loginRrequestPassword.equals(databasePassword)) {
+        if (!loginRequestPassword.equals(databasePassword)) {
             throw new IncorrectNameOrPasswordException("Incorrect login or password");
         }
     }
 
     private  Optional<LoggedinUser> checkLoginInDatabase(String email, List<LoggedinUser> registeredUsers) throws IncorrectNameOrPasswordException {
-        //final String emailToCheck = email;
         Optional<LoggedinUser> dataBaseUser = registeredUsers.stream().
                 filter(p -> p.getUserEmail().equals(email)).
                 findFirst();

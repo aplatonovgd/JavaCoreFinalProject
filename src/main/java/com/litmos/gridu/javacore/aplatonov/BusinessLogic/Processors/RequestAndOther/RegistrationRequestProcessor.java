@@ -1,8 +1,8 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidEmailException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.UserExistException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
@@ -25,7 +25,7 @@ public class RegistrationRequestProcessor extends AbstractPostRequestProcessor {
     }
 
 
-    public void processRequest() throws InvalidJsonException, SQLException, UserExistException, NoSuchAlgorithmException, InvalidEmailException, InvalidPasswordException {
+    public void processRequest() throws InvalidJsonException, SQLException, UserExistException, NoSuchAlgorithmException, InvalidEmailException, IncorrectNameOrPasswordException {
 
         RegisterRequestModel registerRequest = parseJson(requestBody);
         checkUserEmail(registerRequest.getEmail());

@@ -1,8 +1,8 @@
 package Processors;
 
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectNameOrPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidEmailException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidPasswordException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.UserExistException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.RegistrationRequestProcessor;
@@ -10,6 +10,7 @@ import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.RegisterRequestModel;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -43,15 +44,16 @@ public class RegistrationRequestProcessorTest {
     @BeforeAll
     public static void getProperties() throws IOException {
         props = new Properties();
-        input = new FileInputStream("src/test/resources/registrationRequestData.properties");
+        input = new FileInputStream("src/test/resources/authorizationRequestData.properties");
         props.load(input);
     }
 
 
     @Test
-    public void whenUserIsAbsentCorrectEmailToDatabase() throws IOException, InvalidEmailException, InvalidPasswordException, NoSuchAlgorithmException, SQLException, InvalidJsonException, UserExistException {
+    @DisplayName("When user is absent correct email sent to database")
+    public void CorrectEmailSentToDatabase() throws IOException, InvalidEmailException, NoSuchAlgorithmException, SQLException, InvalidJsonException, UserExistException, IncorrectNameOrPasswordException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_CorrectData"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_CorrectDataNoHash"));
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
         doNothing().when(mockedDbProcessor).addUserToDB(registerReqArgCapture.capture());
 
@@ -59,13 +61,14 @@ public class RegistrationRequestProcessorTest {
                 new RegistrationRequestProcessor(mockedReq, mockedDbProcessor, true);
         registrationRequestProcessor.processRequest();
 
-        assertEquals(props.getProperty("RegisterRequest_CorrectData_ExpectedEmail"), registerReqArgCapture.getValue().getEmail());
+        assertEquals(props.getProperty("AuthRequest_CorrectData_ExpectedEmail"), registerReqArgCapture.getValue().getEmail());
     }
 
     @Test
-    public void whenUserIsAbsentCorrectPasswordHashToDatabase() throws IOException, InvalidEmailException, InvalidPasswordException, NoSuchAlgorithmException, SQLException, InvalidJsonException, UserExistException {
+    @DisplayName("When user is absent correct password hash sent to database")
+    public void correctPasswordHashSentToDatabase() throws IOException, InvalidEmailException, NoSuchAlgorithmException, SQLException, InvalidJsonException, UserExistException, IncorrectNameOrPasswordException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_CorrectData"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_CorrectDataNoHash"));
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
         doNothing().when(mockedDbProcessor).addUserToDB(registerReqArgCapture.capture());
 
@@ -73,14 +76,15 @@ public class RegistrationRequestProcessorTest {
                 new RegistrationRequestProcessor(mockedReq, mockedDbProcessor, true);
         registrationRequestProcessor.processRequest();
 
-        String expectedPassHash = RequestHelper.calculatePasswordHash(props.getProperty("RegisterRequest_CorrectData_ExpectedPasswordNoHash"));
+        String expectedPassHash = RequestHelper.calculatePasswordHash(props.getProperty("AuthRequest_CorrectData_ExpectedPasswordNoHash"));
         assertEquals(expectedPassHash, registerReqArgCapture.getValue().getPassword());
     }
 
     @Test
-    public void whenUserIsAbsentCorrectPasswordToDatabase() throws IOException, InvalidEmailException, InvalidPasswordException, NoSuchAlgorithmException, SQLException, InvalidJsonException, UserExistException {
+    @DisplayName("When user is absent correct password sent to database")
+    public void correctPasswordSentToDatabase() throws IOException, InvalidEmailException, NoSuchAlgorithmException, SQLException, InvalidJsonException, UserExistException, IncorrectNameOrPasswordException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_CorrectData"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_CorrectDataNoHash"));
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
         doNothing().when(mockedDbProcessor).addUserToDB(registerReqArgCapture.capture());
 
@@ -88,13 +92,14 @@ public class RegistrationRequestProcessorTest {
                 new RegistrationRequestProcessor(mockedReq, mockedDbProcessor, false);
         registrationRequestProcessor.processRequest();
 
-        assertEquals(props.getProperty("RegisterRequest_CorrectData_ExpectedPasswordNoHash"), registerReqArgCapture.getValue().getPassword());
+        assertEquals(props.getProperty("AuthRequest_CorrectData_ExpectedPasswordNoHash"), registerReqArgCapture.getValue().getPassword());
     }
 
     @Test
-    public void whenUserEmailWithoutAtExceptionThrown() throws IOException, SQLException {
+    @DisplayName("When user email without 'at'(@) exception is thrown")
+    public void emailWithoutAtExceptionThrown() throws IOException, SQLException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_EmailWithoutAt"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_EmailWithoutAt"));
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
         doNothing().when(mockedDbProcessor).addUserToDB(isA(RegisterRequestModel.class));
 
@@ -105,9 +110,10 @@ public class RegistrationRequestProcessorTest {
     }
 
     @Test
-    public void whenUserEmailWithoutDotExceptionThrown() throws IOException, SQLException {
+    @DisplayName("When user email without 'dot'(.) exception is thrown")
+    public void emailWithoutDotExceptionThrown() throws IOException, SQLException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_EmailWithoutDot"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_EmailWithoutDot"));
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
         doNothing().when(mockedDbProcessor).addUserToDB(isA(RegisterRequestModel.class));
 
@@ -118,35 +124,24 @@ public class RegistrationRequestProcessorTest {
     }
 
     @Test
-    public void whenUserHasEmptyPasswordExceptionThrown() throws IOException, SQLException {
+    @DisplayName("When password is empty exception is thrown")
+    public void emptyPasswordExceptionThrown() throws IOException, SQLException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_EmptyPassword"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_EmptyPassword"));
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
         doNothing().when(mockedDbProcessor).addUserToDB(isA(RegisterRequestModel.class));
 
         RegistrationRequestProcessor registrationRequestProcessor =
                 new RegistrationRequestProcessor(mockedReq, mockedDbProcessor, true);
 
-        assertThrows(InvalidPasswordException.class, registrationRequestProcessor::processRequest);
+        assertThrows(IncorrectNameOrPasswordException.class, registrationRequestProcessor::processRequest);
     }
 
     @Test
-    public void whenUserInvalidJsonExceptionThrown() throws IOException, SQLException {
+    @DisplayName("When request is incorrect InvalidJsonException is thrown")
+    public void requestIncorrectInvalidJsonExceptionThrown() throws IOException, SQLException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_InvalidJson"));
-        when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
-        doNothing().when(mockedDbProcessor).addUserToDB(isA(RegisterRequestModel.class));
-
-        RegistrationRequestProcessor registrationRequestProcessor =
-                new RegistrationRequestProcessor(mockedReq, mockedDbProcessor, true);
-
-        assertThrows(InvalidJsonException.class, registrationRequestProcessor::processRequest);
-    }
-
-    @Test
-    public void whenUserIncorrectJsonFieldExceptionThrown() throws IOException, SQLException {
-
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_IncorrectFieldsJson"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_InvalidJson"));
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
         doNothing().when(mockedDbProcessor).addUserToDB(isA(RegisterRequestModel.class));
 
@@ -157,13 +152,28 @@ public class RegistrationRequestProcessorTest {
     }
 
     @Test
-    public void whenUserExistExceptionThrown() throws IOException, SQLException {
+    @DisplayName("When json has incorrect field exception is thrown")
+    public void incorrectRequestFieldsJsonFieldExceptionThrown() throws IOException, SQLException {
 
-        setMockRequestBody(mockedReq,props.getProperty("RegisterRequest_CorrectData"));
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_IncorrectFieldsJson"));
+        when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(new ArrayList<>());
+        doNothing().when(mockedDbProcessor).addUserToDB(isA(RegisterRequestModel.class));
+
+        RegistrationRequestProcessor registrationRequestProcessor =
+                new RegistrationRequestProcessor(mockedReq, mockedDbProcessor, true);
+
+        assertThrows(InvalidJsonException.class, registrationRequestProcessor::processRequest);
+    }
+
+    @Test
+    @DisplayName("When user is already exist exception is thrown")
+    public void userExistExceptionThrown() throws IOException, SQLException {
+
+        setMockRequestBody(mockedReq,props.getProperty("AuthRequest_CorrectDataNoHash"));
 
         //We expect List with user. So we need to mock our list
-        String mockedEmail = props.getProperty("RegisterRequest_CorrectData_ExpectedEmail");
-        String mockedPassword = props.getProperty("RegisterRequest_CorrectData_ExpectedPasswordNoHash");
+        String mockedEmail = props.getProperty("AuthRequest_CorrectData_ExpectedEmail");
+        String mockedPassword = props.getProperty("AuthRequest_CorrectData_ExpectedPasswordNoHash");
         List<RegisterRequestModel> mockedList = mockRegisterRequestModelList(mockedEmail,mockedPassword);
 
         when(mockedDbProcessor.getRegisterRequestModelListByLogin(isA(String.class))).thenReturn(mockedList);
