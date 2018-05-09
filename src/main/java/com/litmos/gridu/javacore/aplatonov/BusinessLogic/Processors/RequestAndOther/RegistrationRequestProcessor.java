@@ -58,7 +58,7 @@ public class RegistrationRequestProcessor extends AbstractPostRequestProcessor {
    @Override
    protected RegisterRequestModel parseJson(String json) throws InvalidJsonException {
 
-      RegisterRequestModel registerRequest =  gson.fromJson(json, RegisterRequestModel.class);
+      RegisterRequestModel registerRequest;
 
       try{
           registerRequest =  gson.fromJson(json, RegisterRequestModel.class);

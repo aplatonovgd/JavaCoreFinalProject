@@ -38,7 +38,7 @@ public abstract class AbstractPostRequestProcessor {
         }
     }
 
-    public void checkUserPassword(String password) throws InvalidEmailException, InvalidPasswordException {
+    public void checkUserPassword(String password) throws InvalidPasswordException {
        if(password.length() <= 0) {
             throw new InvalidPasswordException("Your password is invalid");
         }
