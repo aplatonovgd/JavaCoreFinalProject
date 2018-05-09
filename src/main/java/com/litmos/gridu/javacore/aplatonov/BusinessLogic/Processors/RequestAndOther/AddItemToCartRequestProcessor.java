@@ -22,13 +22,11 @@ public class AddItemToCartRequestProcessor extends AbstractCartRequestProcessor 
 
         AddItemToCartRequestModel addItemToCartRequestModel = parseJson(requestBody);
 
-        ItemModel itemModel = productInfo.getItemFromProductInfo(addItemToCartRequestModel.getId()); //getItemFromDatabse(Integer.parseInt(addItemToCartRequestModel.getId()));
+        ItemModel itemModel = productInfo.getItemFromProductInfo(addItemToCartRequestModel.getId());
 
-        //checkItemQuantity(addItemToCartRequestModel.getQuantity(), itemModel.getQuantity());
         itemModel.setQuantity(addItemToCartRequestModel.getQuantity());
 
         String userId = RequestHelper.getUserIdByCookies(request.getCookies(),loggedInUserInfo);
-
 
         CartModel cartModel = getCartModel(userId);
 

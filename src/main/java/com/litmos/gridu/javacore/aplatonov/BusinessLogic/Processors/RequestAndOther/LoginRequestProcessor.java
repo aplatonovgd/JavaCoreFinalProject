@@ -101,46 +101,54 @@ protected LoggedInUserInfo loggedInUserInfo;
 
     public static class LoggedInUserInfo {
 
+        private final Object loggedInKey = new Object();
+
         private Map<String,LoggedinUser> sessionIdToUserMap= new HashMap<>();
 
         public LoggedinUser getUserBySessionId(String sessionId) throws SessionNotFoundException {
-            LoggedinUser loggedinUser;
-            if (sessionIdToUserMap.containsKey(sessionId)) {
-                loggedinUser = sessionIdToUserMap.get(sessionId);
+
+            synchronized (loggedInKey) {
+                LoggedinUser loggedinUser;
+                if (sessionIdToUserMap.containsKey(sessionId)) {
+                    loggedinUser = sessionIdToUserMap.get(sessionId);
+                } else {
+                    throw new SessionNotFoundException("Session not found");
+                }
+                return loggedinUser;
             }
-            else {
-                throw new SessionNotFoundException("Session not found");
-            }
-            return loggedinUser;
         }
 
         public int getUserIdBySessionId(String sessionId) throws SessionNotFoundException {
-            int userId;
-            if (sessionIdToUserMap.containsKey(sessionId)) {
-                LoggedinUser loggedinUser = sessionIdToUserMap.get(sessionId);
-                userId = loggedinUser.getUserId();
-            }
-            else {
-                throw new SessionNotFoundException("Session not found");
-            }
 
-            return userId;
+            synchronized (loggedInKey) {
+                int userId;
+                if (sessionIdToUserMap.containsKey(sessionId)) {
+                    LoggedinUser loggedinUser = sessionIdToUserMap.get(sessionId);
+                    userId = loggedinUser.getUserId();
+                } else {
+                    throw new SessionNotFoundException("Session not found");
+                }
+
+                return userId;
+            }
         }
 
         protected void removeUserBySessionId(String sessionId) throws SessionNotFoundException {
-            if (sessionIdToUserMap.containsKey(sessionId)) {
-                sessionIdToUserMap.remove(sessionId);
-            }
-            else {
-                throw new SessionNotFoundException("Session not found");
+            synchronized (loggedInKey) {
+                if (sessionIdToUserMap.containsKey(sessionId)) {
+                    sessionIdToUserMap.remove(sessionId);
+                } else {
+                    throw new SessionNotFoundException("Session not found");
+                }
             }
         }
 
 
 
         private void addLoginInfo(String sessionId, LoggedinUser loggedinUser) {
-
-            sessionIdToUserMap.put(sessionId, loggedinUser);
+            synchronized (loggedInKey) {
+                sessionIdToUserMap.put(sessionId, loggedinUser);
+            }
         }
 
 

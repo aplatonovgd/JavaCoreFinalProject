@@ -5,6 +5,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
 import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -70,6 +71,6 @@ public class CheckoutRequestProcessor extends AbstractCartRequestProcessor {
 
     @Override
     protected Object parseJson(String json) throws InvalidJsonException {
-        return null;
+        throw new NotImplementedException();
     }
 }

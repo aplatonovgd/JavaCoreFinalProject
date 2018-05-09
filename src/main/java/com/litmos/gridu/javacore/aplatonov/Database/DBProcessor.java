@@ -160,7 +160,7 @@ public class DBProcessor extends DBConnector {
                 String productId = String.valueOf(resultSet.getInt("productId"));
                 String productTitle = String.valueOf(resultSet.getString("productTitle"));
                 String productQuantity = String.valueOf(resultSet.getString("productQuantity"));
-                String productPrice = String.valueOf(resultSet.getString("productPrice"));
+                String productPrice = String.format("%.2f",resultSet.getDouble("productPrice"));
 
                 ProductModel productModel = new ProductModel(productId,productTitle,productQuantity,productPrice);
                 productModels.add(productModel);

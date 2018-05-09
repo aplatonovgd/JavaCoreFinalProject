@@ -48,7 +48,7 @@ public class ModifyCartItemRequestProcessor extends AbstractCartRequestProcessor
         }
         else if (currentCartItemQuantity > expectedQuantity){
 
-            /* ADD TO PRODUCTS CACHE. NOT TO THE CART*/
+            /* ADD TO THE PRODUCTS CACHE. NOT TO THE CART*/
             productInfo.addProductQuantity(productId,String.valueOf(currentCartItemQuantity - expectedQuantity));
         }
 

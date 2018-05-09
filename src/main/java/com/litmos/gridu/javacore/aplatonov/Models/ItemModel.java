@@ -32,7 +32,7 @@ public class ItemModel {
 
     private void calculateAndSetSubtotal(double productPrice, int quantity){
         productPrice *= quantity;
-        this.subtotal= String.valueOf(productPrice);
+        this.subtotal= String.valueOf(String.format("%.2f",productPrice));
     }
 
     public String getQuantity() {

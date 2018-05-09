@@ -69,6 +69,8 @@ public abstract class AbstractCartRequestProcessor extends AbstractPostRequestPr
 
     public static class ProductInfo {
 
+         private final Object productInfoKey = new Object();
+
          private List<ProductModel> productModelList;
 
          public ProductInfo(List<ProductModel> productModel){
@@ -79,120 +81,136 @@ public abstract class AbstractCartRequestProcessor extends AbstractPostRequestPr
             return productModelList;
          }
 
-         protected void updateProductInfo(List<ProductModel> productModelList){
-             this.productModelList = productModelList;
+         protected void updateProductInfo(List<ProductModel> productModelList) {
+             synchronized (productInfoKey){
+                this.productModelList = productModelList;
+            }
          }
 
 
          protected ItemModel getItemFromProductInfo(String productId) throws ItemNotfoundException {
+             synchronized (productInfoKey) {
+                 Optional<ProductModel> productModelOptional = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+                 ItemModel itemModel;
 
-             Optional<ProductModel> productModelOptional = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
-             ItemModel itemModel;
-
-            if (productModelOptional.isPresent())
-            {
-                ProductModel productModel = productModelOptional.get();
-                return new ItemModel(productModel.getId(),productModel.getTitle(),productModel.getQuantity(),productModel.getPrice());
-            }
-            else{
-                throw new ItemNotfoundException("Product not found in product list");
-            }
+                 if (productModelOptional.isPresent()) {
+                     ProductModel productModel = productModelOptional.get();
+                     return new ItemModel(productModel.getId(), productModel.getTitle(), productModel.getQuantity(), productModel.getPrice());
+                 } else {
+                     throw new ItemNotfoundException("Product not found in product list");
+                 }
+             }
          }
 
         protected void withdrawProductFromProductDatabaseQuantity(String productId, String quantity) throws ItemNotfoundException, IncorrectQuantityException {
-            Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
-            if (productModel.isPresent()) {
-                String productListQuantityOriginal = productModel.get().getAvailableInDataBase();
+             synchronized (productInfoKey) {
+                 Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+                 if (productModel.isPresent()) {
+                     String productListQuantityOriginal = productModel.get().getAvailableInDataBase();
 
-                int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) - Integer.parseInt(quantity);
-                if (ExpectedQuantity < 0){
-                    throw new IncorrectQuantityException("Products quantity can't be lower the zero");
-                }
-                else {
-                    String newProductListQuantity = String.valueOf(ExpectedQuantity);
-                    productModel.get().setDatabaseQuantity(newProductListQuantity);
-                }
+                     int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) - Integer.parseInt(quantity);
+                     if (ExpectedQuantity < 0) {
+                         throw new IncorrectQuantityException("Products quantity can't be lower the zero");
+                     } else {
+                         String newProductListQuantity = String.valueOf(ExpectedQuantity);
+                         productModel.get().setDatabaseQuantity(newProductListQuantity);
+                     }
 
-            } else {
-                throw new ItemNotfoundException("Product not found in product list");
-            }
+                 } else {
+                     throw new ItemNotfoundException("Product not found in product list");
+                 }
+             }
         }
 
 
         protected void addProductQuantity(String productId, String quantity) throws ItemNotfoundException, IncorrectQuantityException {
-            Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
-            if (productModel.isPresent()) {
+             synchronized (productInfoKey) {
+                 Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+                 if (productModel.isPresent()) {
 
-                int databaseQuantity = Integer.valueOf(productModel.get().getAvailableInDataBase());
-                String productListQuantityOriginal = productModel.get().getQuantity();
-                int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) + Integer.parseInt(quantity);
+                     int databaseQuantity = Integer.valueOf(productModel.get().getAvailableInDataBase());
+                     String productListQuantityOriginal = productModel.get().getQuantity();
+                     int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) + Integer.parseInt(quantity);
 
-                if(ExpectedQuantity > databaseQuantity){
-                    throw new IncorrectQuantityException("Not enough items in the database");
-                }
-                else {
+                     if (ExpectedQuantity > databaseQuantity) {
+                         throw new IncorrectQuantityException("Not enough items in the database");
+                     } else {
 
-                    productModel.get().setQuantity(String.valueOf(ExpectedQuantity));
-                }
+                         productModel.get().setQuantity(String.valueOf(ExpectedQuantity));
+                     }
 
-            } else {
-                throw new ItemNotfoundException("Product not found in product list");
-            }
+                 } else {
+                     throw new ItemNotfoundException("Product not found in product list");
+                 }
+             }
         }
 
 
         protected void withdrawProductQuantity(String productId, String quantity) throws ItemNotfoundException, IncorrectQuantityException {
-            Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
-            if (productModel.isPresent()) {
+             synchronized (productInfoKey) {
+                 Optional<ProductModel> productModel = productModelList.stream().filter(arg -> arg.getId().equals(productId)).findFirst();
+                 if (productModel.isPresent()) {
 
-                String productListQuantityOriginal = productModel.get().getQuantity();
+                     String productListQuantityOriginal = productModel.get().getQuantity();
 
-                int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) - Integer.parseInt(quantity);
-                if (ExpectedQuantity < 0){
-                    throw new IncorrectQuantityException("Not enough items in the database");
-                }
-                else {
-                    String newProductListQuantity = String.valueOf(ExpectedQuantity);
-                    productModel.get().setQuantity(newProductListQuantity);
-                }
+                     int ExpectedQuantity = Integer.parseInt(productListQuantityOriginal) - Integer.parseInt(quantity);
+                     if (ExpectedQuantity < 0) {
+                         throw new IncorrectQuantityException("Not enough items in the database");
+                     } else {
+                         String newProductListQuantity = String.valueOf(ExpectedQuantity);
+                         productModel.get().setQuantity(newProductListQuantity);
+                     }
 
-            } else {
-                throw new ItemNotfoundException("Product not found in product list");
-            }
+                 } else {
+                     throw new ItemNotfoundException("Product not found in product list");
+                 }
+             }
         }
 
     }
 
     public static class CartInfo {
 
+        private final Object cartInfoKey = new Object();
+
         public Map<String, CartModel> getUserIdToCartMap() {
-            return userIdToCartMap;
+            synchronized (cartInfoKey) {
+                return userIdToCartMap;
+            }
         }
 
         protected Map<String, CartModel> userIdToCartMap = new HashMap<>();
 
         public CartModel getCartByUserId(String userId) throws CartNotFoundException {
-            CartModel cartModel;
-            if (userIdToCartMap.containsKey(userId)) {
-                cartModel = userIdToCartMap.get(userId);
-            } else {
-                throw new CartNotFoundException("Cart not found");
+            synchronized (cartInfoKey) {
+                CartModel cartModel;
+                if (userIdToCartMap.containsKey(userId)) {
+                    cartModel = userIdToCartMap.get(userId);
+                } else {
+                    throw new CartNotFoundException("Cart not found");
+                }
+                return cartModel;
             }
-            return cartModel;
         }
 
         protected void addToCartInfo(String userId, CartModel cartModel) {
 
-            userIdToCartMap.put(userId, cartModel);
+            synchronized (cartInfoKey) {
+                userIdToCartMap.put(userId, cartModel);
+            }
         }
 
 
         protected void replaceCartInfo(String userId, CartModel cartModel){
-            userIdToCartMap.replace(userId,cartModel);
+            synchronized (cartInfoKey) {
+                userIdToCartMap.replace(userId, cartModel);
+            }
         }
 
         protected void removeCart(String userId){
-            userIdToCartMap.remove(userId);
+            synchronized (cartInfoKey) {
+                userIdToCartMap.remove(userId);
+            }
         }
 
     }
