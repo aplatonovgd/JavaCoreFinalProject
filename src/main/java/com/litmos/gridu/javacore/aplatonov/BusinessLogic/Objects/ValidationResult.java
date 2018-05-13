@@ -1,14 +1,10 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models;
-
-import com.google.gson.annotations.Expose;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects;
 
 public class ValidationResult {
 
-    @Expose
+
     private boolean success;
-    @Expose
     private String message;
-    @Expose
     private String description;
 
 

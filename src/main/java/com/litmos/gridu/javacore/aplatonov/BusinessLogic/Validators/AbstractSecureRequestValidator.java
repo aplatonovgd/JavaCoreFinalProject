@@ -4,7 +4,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFo
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;

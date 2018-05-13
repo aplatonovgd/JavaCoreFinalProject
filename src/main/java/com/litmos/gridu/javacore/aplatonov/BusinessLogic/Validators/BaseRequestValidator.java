@@ -1,6 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
 
 public interface BaseRequestValidator {
 
