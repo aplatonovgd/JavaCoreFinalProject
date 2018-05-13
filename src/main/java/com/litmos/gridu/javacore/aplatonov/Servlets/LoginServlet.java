@@ -10,7 +10,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.Log
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.LoginRequestValidationResultProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ValidationResult;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

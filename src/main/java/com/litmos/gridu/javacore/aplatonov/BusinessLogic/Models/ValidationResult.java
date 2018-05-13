@@ -1,4 +1,4 @@
-package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models;
 
 import com.google.gson.annotations.Expose;
 

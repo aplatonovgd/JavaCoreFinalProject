@@ -1,7 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.IncorrectContentTypeException;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ValidationResult;
 
 import javax.servlet.http.HttpServletRequest;
 

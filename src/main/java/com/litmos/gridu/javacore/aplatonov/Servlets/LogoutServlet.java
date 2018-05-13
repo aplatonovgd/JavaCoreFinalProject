@@ -1,6 +1,6 @@
 package com.litmos.gridu.javacore.aplatonov.Servlets;
 
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ValidationResult;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LogoutRequestProccessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response.ErrorResponseProcessor;

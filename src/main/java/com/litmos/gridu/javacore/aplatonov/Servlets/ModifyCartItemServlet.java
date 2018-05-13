@@ -5,7 +5,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOt
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.ModifyCartItemRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Validators.SecurePostRequestValidator;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.ValidationResult;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ValidationResult;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.ModifyCartItemRequestExcpetionProcessor;
 import com.litmos.gridu.javacore.aplatonov.Servlets.Helpers.SecurePostRequestsValidatorProcessor;
 
