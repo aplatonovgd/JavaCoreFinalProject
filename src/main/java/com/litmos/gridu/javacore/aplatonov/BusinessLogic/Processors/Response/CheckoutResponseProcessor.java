@@ -2,7 +2,7 @@ package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.Response;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-import com.litmos.gridu.javacore.aplatonov.Models.CheckoutResponseModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.CheckoutResponseModel;
 
 public class CheckoutResponseProcessor implements BaseResponseProcessor {
 

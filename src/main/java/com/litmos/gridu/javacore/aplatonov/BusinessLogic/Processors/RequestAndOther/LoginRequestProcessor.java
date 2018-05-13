@@ -4,7 +4,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.LoginRequestModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.LoginRequestModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

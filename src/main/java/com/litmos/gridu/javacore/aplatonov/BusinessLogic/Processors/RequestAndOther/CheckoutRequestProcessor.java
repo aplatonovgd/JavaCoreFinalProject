@@ -3,8 +3,8 @@ package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndO
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
-import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.CartModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ItemModel;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.http.HttpServletRequest;

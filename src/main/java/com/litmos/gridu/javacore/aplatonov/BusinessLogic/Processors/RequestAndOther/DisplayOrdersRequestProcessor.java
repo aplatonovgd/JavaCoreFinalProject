@@ -4,8 +4,8 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonE
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.OrderModel;
-import com.litmos.gridu.javacore.aplatonov.Models.OrdersResponseModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.OrderModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.OrdersResponseModel;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.http.HttpServletRequest;

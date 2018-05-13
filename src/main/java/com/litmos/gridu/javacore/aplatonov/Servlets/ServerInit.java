@@ -4,7 +4,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOt
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.AbstractCartRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.LoginRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.ProductModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ProductModel;
 
 import javax.servlet.*;
 import java.util.List;

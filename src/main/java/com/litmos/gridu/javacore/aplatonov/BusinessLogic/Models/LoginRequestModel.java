@@ -1,6 +1,4 @@
-package com.litmos.gridu.javacore.aplatonov.Models;
-
-import com.google.gson.annotations.Expose;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models;
 
 public class LoginRequestModel extends RegisterRequestModel {
 

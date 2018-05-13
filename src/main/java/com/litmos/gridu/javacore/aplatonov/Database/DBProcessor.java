@@ -1,16 +1,15 @@
 package com.litmos.gridu.javacore.aplatonov.Database;
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Objects.LoggedinUser;
-import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
-import com.litmos.gridu.javacore.aplatonov.Models.OrderModel;
-import com.litmos.gridu.javacore.aplatonov.Models.ProductModel;
-import com.litmos.gridu.javacore.aplatonov.Models.RegisterRequestModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ItemModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.OrderModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ProductModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.RegisterRequestModel;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class DBProcessor extends DBConnector {
 

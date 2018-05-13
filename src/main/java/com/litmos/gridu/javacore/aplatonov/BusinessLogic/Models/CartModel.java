@@ -1,4 +1,4 @@
-package com.litmos.gridu.javacore.aplatonov.Models;
+package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models;
 
 import com.google.gson.annotations.Expose;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.ItemNotfoundException;

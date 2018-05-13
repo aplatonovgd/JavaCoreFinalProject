@@ -6,7 +6,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.InvalidJsonE
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.UserExistException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.RegisterRequestModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.RegisterRequestModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

@@ -1,15 +1,11 @@
 package com.litmos.gridu.javacore.aplatonov.Database;
 
-import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DBConnector {

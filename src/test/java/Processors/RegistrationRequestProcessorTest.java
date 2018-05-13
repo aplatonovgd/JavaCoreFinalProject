@@ -7,7 +7,7 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.UserExistExc
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndOther.RegistrationRequestProcessor;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.RegisterRequestModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.RegisterRequestModel;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

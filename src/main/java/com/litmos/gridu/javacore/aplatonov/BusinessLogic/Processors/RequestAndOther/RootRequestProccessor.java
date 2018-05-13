@@ -2,7 +2,7 @@ package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndO
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.litmos.gridu.javacore.aplatonov.Models.RootResponseModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.RootResponseModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

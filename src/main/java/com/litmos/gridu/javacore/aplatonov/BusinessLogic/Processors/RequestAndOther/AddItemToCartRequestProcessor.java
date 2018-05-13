@@ -2,10 +2,10 @@ package com.litmos.gridu.javacore.aplatonov.BusinessLogic.Processors.RequestAndO
 
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.*;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
-import com.litmos.gridu.javacore.aplatonov.Models.ItemModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ItemModel;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.AddItemToCartRequestModel;
-import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.AddItemToCartRequestModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.CartModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

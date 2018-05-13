@@ -6,8 +6,8 @@ import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.ItemNotfound
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Exceptions.SessionNotFoundException;
 import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Helpers.RequestHelper;
 import com.litmos.gridu.javacore.aplatonov.Database.DBProcessor;
-import com.litmos.gridu.javacore.aplatonov.Models.CartModel;
-import com.litmos.gridu.javacore.aplatonov.Models.ModifyCartItemRequestModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.CartModel;
+import com.litmos.gridu.javacore.aplatonov.BusinessLogic.Models.ModifyCartItemRequestModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
